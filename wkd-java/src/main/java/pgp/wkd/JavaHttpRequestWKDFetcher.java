@@ -26,16 +26,17 @@ public class JavaHttpRequestWKDFetcher implements IWKDFetcher {
             return tryFetchUri(advanced);
         } catch (IOException e) {
             advancedException = e;
-            LOGGER.debug("Could not fetch key using advanced method from " + advanced.toString(), e);
+            LOGGER.debug("Could not fetch key using advanced method from " + advanced.toString(), advancedException);
         }
 
         URI direct = address.getDirectMethodURI();
         try {
             return tryFetchUri(direct);
         } catch (IOException e) {
-            advancedException.addSuppressed(e);
+            // we would like to use addSuppressed eventually, but Android API 10 does no support it
+            // e.addSuppressed(advancedException);
             LOGGER.debug("Could not fetch key using direct method from " + direct.toString(), e);
-            throw advancedException;
+            throw e;
         }
     }
 
@@ -49,38 +50,13 @@ public class JavaHttpRequestWKDFetcher implements IWKDFetcher {
 
         int status = con.getResponseCode();
         if (status != 200) {
-            throw new ConnectException("Connection was unsuccessful");
+            throw new ConnectException("Connecting to '" + uri + "' failed. Status: " + status);
         }
-        LOGGER.debug("Successfully fetched key from " + uri);
         return con.getInputStream();
     }
 
     private HttpURLConnection getConnection(URI uri) throws IOException {
         URL url = uri.toURL();
         return (HttpURLConnection) url.openConnection();
-    }
-
-    public static void main(String[] args) {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("Expect a single argument email address");
-        }
-
-        String email = args[0];
-        WKDAddress address = WKDAddress.fromEmail(email);
-
-        JavaHttpRequestWKDFetcher fetch = new JavaHttpRequestWKDFetcher();
-        try {
-            InputStream inputStream = fetch.fetch(address);
-            byte[] buf = new byte[4096];
-            int read;
-            while ((read = inputStream.read(buf)) != -1) {
-                System.out.write(buf, 0, read);
-            }
-            inputStream.close();
-            System.exit(0);
-        } catch (IOException e) {
-            LOGGER.debug("Could not fetch key.", e);
-            System.exit(1);
-        }
     }
 }

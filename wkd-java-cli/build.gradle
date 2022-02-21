@@ -16,12 +16,37 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 
+    // https://todd.ginsberg.com/post/testing-system-exit/
+    testImplementation 'com.ginsberg:junit5-system-exit:1.1.2'
+    testImplementation 'org.mockito:mockito-core:4.3.1'
+
+    implementation("org.pgpainless:pgpainless-core:1.1.0")
     implementation project(':wkd-java')
+    implementation "info.picocli:picocli:4.6.3"
 
     // Logging
     testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
+    implementation 'org.slf4j:slf4j-nop:1.7.36'
 }
 
 test {
     useJUnitPlatform()
+}
+
+
+mainClassName = 'pgp.wkd.cli.WKDCLI'
+
+jar {
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    manifest {
+        attributes 'Main-Class': "$mainClassName"
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
 }
