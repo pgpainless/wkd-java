@@ -6,4 +6,4 @@ SPDX-License-Identifier: Apache-2.0
 
 # WKD-Java
 
-API Implementation of the Web Key Directory Specification for Java.
+API Implementation of the Key Discovery part of the Web Key Directory Specification for Java.

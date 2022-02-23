@@ -13,6 +13,24 @@ public class WKDAddressHelper {
     // we are only interested in "email@address"
     private static final Pattern PATTERN_USER_ID = Pattern.compile("^.*\\<([a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+)\\>.*");
 
+    /**
+     * Parse an email address from a user-id string.
+     * The user-id is herein expected to follow the mail name-addr format described in RFC2822.
+     *
+     * Example User ID (angle normally not escaped):
+     * "Slim Shady &lt;sshady@marshall-mathers.lp&gt; [Yes, the real Shady]"
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc4880#section-5.11">
+     *     RFC4880 - OpenPGP Message Format - §5.11 User ID Packet</a>
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc2822#section-3.4">
+     *     RFC2882 - Internet Message Format - §3.4 Address Specification</a>
+     *
+     * @param userId user-id
+     * @return email address
+     *
+     * @throws IllegalArgumentException in case the user-id does not match the expected format
+     * and does not contain an email address.
+     */
     public static String emailFromUserId(String userId) {
         Matcher matcher = PATTERN_USER_ID.matcher(userId);
         if (!matcher.matches()) {
@@ -23,6 +41,12 @@ public class WKDAddressHelper {
         return email;
     }
 
+    /**
+     * Create a {@link WKDAddress} by extracting an email address from the given user-id.
+     *
+     * @param userId user-id
+     * @return WKD address for the user-id's email address.
+     */
     public static WKDAddress wkdAddressFromUserId(String userId) {
         String email = emailFromUserId(userId);
         return WKDAddress.fromEmail(email);

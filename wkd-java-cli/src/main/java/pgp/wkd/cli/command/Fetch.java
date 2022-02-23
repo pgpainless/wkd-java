@@ -8,8 +8,8 @@ import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.pgpainless.PGPainless;
 import org.pgpainless.key.info.KeyRingInfo;
-import pgp.wkd.IWKDFetcher;
-import pgp.wkd.JavaHttpRequestWKDFetcher;
+import pgp.wkd.AbstractWKDFetcher;
+import pgp.wkd.HttpUrlConnectionWKDFetcher;
 import pgp.wkd.WKDAddress;
 import pgp.wkd.WKDAddressHelper;
 import pgp.wkd.cli.MissingUserIdException;
@@ -40,7 +40,7 @@ public class Fetch implements Runnable {
     )
     boolean armor = false;
 
-    IWKDFetcher fetcher = new JavaHttpRequestWKDFetcher();
+    AbstractWKDFetcher fetcher = new HttpUrlConnectionWKDFetcher();
 
     @Override
     public void run() {
