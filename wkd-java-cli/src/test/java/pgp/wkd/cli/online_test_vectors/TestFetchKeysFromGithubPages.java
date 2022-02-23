@@ -5,12 +5,14 @@
 package pgp.wkd.cli.online_test_vectors;
 
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import pgp.wkd.cli.WKDCLI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class GithubPagesTestVectors extends RedirectSystemStreamsTest {
+@Disabled("For privacy reasons")
+public class TestFetchKeysFromGithubPages extends RedirectSystemStreamsTest {
 
     // Valid WKD publication.
     // Cert is available at https://pgpainless.github.io/.well-known/openpgpkey/hu/eprjcbeppbna3f6xabhtpddzpn41nknw
