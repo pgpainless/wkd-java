@@ -41,6 +41,7 @@ public class Fetch implements Runnable {
     )
     boolean armor = false;
 
+    // TODO: Better way to inject fetcher implementation
     public static AbstractWKDFetcher fetcher = new HttpUrlConnectionWKDFetcher();
 
     @Override
