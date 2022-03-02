@@ -56,6 +56,9 @@ public class Fetch implements Runnable {
         WKDAddress address = WKDAddress.fromEmail(email);
         try (InputStream inputStream = fetcher.fetch(address)) {
             PGPPublicKeyRing cert = PGPainless.readKeyRing().publicKeyRing(inputStream);
+            if (cert == null) {
+                throw new CertNotFetchableException("Fetched data does not contain an OpenPGP certificate.");
+            }
             KeyRingInfo info = PGPainless.inspectKeyRing(cert);
 
             List<String> userIds = info.getValidAndExpiredUserIds();
