@@ -13,28 +13,26 @@ repositories {
 }
 
 dependencies {
+    // Testing
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 
-    // https://todd.ginsberg.com/post/testing-system-exit/
-    testImplementation 'com.ginsberg:junit5-system-exit:1.1.2'
-    testImplementation 'org.mockito:mockito-core:4.3.1'
+    // Logging
+    implementation "org.slf4j:slf4j-api:$slf4jVersion"
+    testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
 
-    implementation("org.pgpainless:pgpainless-core:$pgpainlessVersion")
-    implementation project(':wkd-java')
+    // WKD and OpenPGP
+    implementation project (":wkd-java")
+    implementation "org.pgpainless:pgpainless-core:$pgpainlessVersion"
+
+    // CLI
     implementation "info.picocli:picocli:4.6.3"
 
-    // Logging
-    testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
-    implementation 'org.slf4j:slf4j-nop:1.7.36'
+    // Object Mapping
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
 }
-
-test {
-    useJUnitPlatform()
-}
-
-
-mainClassName = 'pgp.wkd.cli.WKDCLI'
+mainClassName = 'pgp.wkd.test_suite.Main'
 
 jar {
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
@@ -49,4 +47,8 @@ jar {
         exclude "META-INF/*.DSA"
         exclude "META-INF/*.RSA"
     }
+}
+
+test {
+    useJUnitPlatform()
 }
