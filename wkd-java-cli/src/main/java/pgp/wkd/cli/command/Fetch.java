@@ -12,6 +12,7 @@ import pgp.wkd.AbstractWKDFetcher;
 import pgp.wkd.HttpUrlConnectionWKDFetcher;
 import pgp.wkd.WKDAddress;
 import pgp.wkd.WKDAddressHelper;
+import pgp.wkd.cli.CertNotFetchableException;
 import pgp.wkd.cli.MissingUserIdException;
 import picocli.CommandLine;
 
@@ -40,7 +41,7 @@ public class Fetch implements Runnable {
     )
     boolean armor = false;
 
-    AbstractWKDFetcher fetcher = new HttpUrlConnectionWKDFetcher();
+    public static AbstractWKDFetcher fetcher = new HttpUrlConnectionWKDFetcher();
 
     @Override
     public void run() {
@@ -65,7 +66,7 @@ public class Fetch implements Runnable {
                 }
             }
             if (!containsEmail) {
-                throw new MissingUserIdException();
+                throw new MissingUserIdException("Fetched certificate does not contain email address " + email);
             }
 
             if (armor) {
@@ -77,12 +78,7 @@ public class Fetch implements Runnable {
             }
 
         } catch (IOException e) {
-            System.err.println("Could not fetch certificate.");
-            e.printStackTrace();
-            System.exit(1);
-        } catch (MissingUserIdException e) {
-            System.err.println("Fetched certificate does not contain email address " + email);
-            System.exit(1);
+            throw new CertNotFetchableException("Certificate cannot be fetched.", e);
         }
     }
 }

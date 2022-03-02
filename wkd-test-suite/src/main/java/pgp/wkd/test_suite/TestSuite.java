@@ -4,6 +4,7 @@
 
 package pgp.wkd.test_suite;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TestSuite {
@@ -14,5 +15,13 @@ public class TestSuite {
     public TestSuite(String version, List<TestCase> testCases) {
         this.version = version;
         this.testCases = testCases;
+    }
+
+    public List<TestCase> getTestCases() {
+        return new ArrayList<>(testCases);
+    }
+
+    public String getVersion() {
+        return version;
     }
 }

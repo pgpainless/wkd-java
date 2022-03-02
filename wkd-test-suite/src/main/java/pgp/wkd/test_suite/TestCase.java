@@ -24,4 +24,28 @@ public class TestCase {
         this.certificatePath = certificatePath.toString();
         this.lookupUri = lookupUri;
     }
+
+    public boolean isExpectSuccess() {
+        return expectSuccess;
+    }
+
+    public String getTestTitle() {
+        return testTitle;
+    }
+
+    public String getTestDescription() {
+        return testDescription;
+    }
+
+    public String getLookupMailAddress() {
+        return lookupMailAddress;
+    }
+
+    public String getCertificatePath() {
+        return certificatePath;
+    }
+
+    public URI getLookupUri() {
+        return lookupUri;
+    }
 }

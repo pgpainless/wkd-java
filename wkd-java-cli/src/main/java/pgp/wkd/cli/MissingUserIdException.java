@@ -8,9 +8,11 @@ package pgp.wkd.cli;
  * Exception that gets thrown when an OpenPGP certificate is not carrying a User-ID binding for the email address
  * that was used to look the certificate up via WKD.
  */
-public class MissingUserIdException extends Exception {
+public class MissingUserIdException extends RuntimeException {
 
-    public MissingUserIdException() {
-        super();
+    public static final int ERROR_CODE = 7;
+
+    public MissingUserIdException(String message) {
+        super(message);
     }
 }
