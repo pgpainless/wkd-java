@@ -66,14 +66,14 @@ public class WKDAddressTest {
                 "John Doe [The Real One]",
                 "<John Doe",
                 "Don Joeh>")) {
-            assertThrows(IllegalArgumentException.class, () -> WKDAddressHelper.wkdAddressFromUserId(brokenUserId));
+            assertThrows(MalformedUserIdException.class, () -> WKDAddressHelper.wkdAddressFromUserId(brokenUserId));
         }
     }
 
     @Test
     public void testFromInvalidEmail() {
         for (String brokenEmail : Arrays.asList("john.doe", "@example.org", "john doe@example.org", "john.doe@example org")) {
-            assertThrows(IllegalArgumentException.class, () -> WKDAddress.fromEmail(brokenEmail));
+            assertThrows(MalformedUserIdException.class, () -> WKDAddress.fromEmail(brokenEmail));
         }
     }
 }

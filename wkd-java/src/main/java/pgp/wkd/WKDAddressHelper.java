@@ -31,10 +31,10 @@ public class WKDAddressHelper {
      * @throws IllegalArgumentException in case the user-id does not match the expected format
      * and does not contain an email address.
      */
-    public static String emailFromUserId(String userId) {
+    public static String emailFromUserId(String userId) throws MalformedUserIdException {
         Matcher matcher = PATTERN_USER_ID.matcher(userId);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("User-ID does not follow excepted pattern \"Firstname Lastname <email.address> [Optional Comment]\"");
+            throw new MalformedUserIdException("User-ID does not follow excepted pattern \"Firstname Lastname <email.address> [Optional Comment]\"");
         }
 
         String email = matcher.group(1);
@@ -47,7 +47,7 @@ public class WKDAddressHelper {
      * @param userId user-id
      * @return WKD address for the user-id's email address.
      */
-    public static WKDAddress wkdAddressFromUserId(String userId) {
+    public static WKDAddress wkdAddressFromUserId(String userId) throws MalformedUserIdException {
         String email = emailFromUserId(userId);
         return WKDAddress.fromEmail(email);
     }

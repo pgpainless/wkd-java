@@ -12,9 +12,9 @@ import java.net.URI;
 import java.net.URL;
 
 /**
- * Implementation of {@link AbstractWKDFetcher} using Java's {@link HttpURLConnection}.
+ * Implementation of {@link WKDFetcher} using Java's {@link HttpURLConnection}.
  */
-public class HttpUrlConnectionWKDFetcher extends AbstractWKDFetcher {
+public class HttpUrlConnectionWKDFetcher extends AbstractUriWKDFetcher {
 
     public InputStream fetchUri(URI uri) throws IOException {
         URL url = uri.toURL();

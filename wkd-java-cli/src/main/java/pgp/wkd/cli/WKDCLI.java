@@ -4,6 +4,7 @@
 
 package pgp.wkd.cli;
 
+import pgp.wkd.MissingUserIdException;
 import pgp.wkd.cli.command.Fetch;
 import picocli.CommandLine;
 

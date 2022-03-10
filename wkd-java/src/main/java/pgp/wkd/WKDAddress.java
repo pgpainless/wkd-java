@@ -87,9 +87,22 @@ public final class WKDAddress {
      * @param email email address, case sensitive
      * @return WKDAddress object
      */
-    public static WKDAddress fromEmail(String email) {
+    public static WKDAddress fromEmail(String email) throws MalformedUserIdException {
         MailAddress mailAddress = parseMailAddress(email);
         return new WKDAddress(mailAddress.getLocalPart(), mailAddress.getDomainPart());
+    }
+
+    public URI getUri(DiscoveryMethod method) {
+        if (method == DiscoveryMethod.advanced) {
+            return getAdvancedMethodURI();
+        } else if (method == DiscoveryMethod.direct) {
+            return getDirectMethodURI();
+        }
+        throw new IllegalArgumentException("Invalid discovery method.");
+    }
+
+    public String getEmail() {
+        return localPart + '@' + domainPart;
     }
 
     /**
@@ -168,10 +181,10 @@ public final class WKDAddress {
      * @param email email address string
      * @return validated and split mail address
      */
-    private static MailAddress parseMailAddress(String email) {
+    private static MailAddress parseMailAddress(String email) throws MalformedUserIdException {
         Matcher matcher = PATTERN_EMAIL.matcher(email);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Invalid email address.");
+            throw new MalformedUserIdException("Invalid email address.");
         }
 
         String localPart = matcher.group(1);

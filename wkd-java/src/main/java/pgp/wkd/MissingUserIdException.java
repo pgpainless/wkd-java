@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package pgp.wkd.cli;
+package pgp.wkd;
 
 /**
  * Exception that gets thrown when an OpenPGP certificate is not carrying a User-ID binding for the email address
