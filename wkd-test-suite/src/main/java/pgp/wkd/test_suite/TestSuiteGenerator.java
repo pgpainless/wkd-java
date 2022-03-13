@@ -5,17 +5,10 @@
 package pgp.wkd.test_suite;
 
 
-import org.bouncycastle.openpgp.PGPException;
-import org.bouncycastle.openpgp.PGPPublicKey;
-import org.bouncycastle.openpgp.PGPPublicKeyRing;
-import org.bouncycastle.openpgp.PGPSecretKeyRing;
-import org.pgpainless.PGPainless;
-import org.pgpainless.key.protection.SecretKeyRingProtector;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
@@ -23,6 +16,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
+
+import org.bouncycastle.openpgp.PGPException;
+import org.bouncycastle.openpgp.PGPPublicKey;
+import org.bouncycastle.openpgp.PGPPublicKeyRing;
+import org.bouncycastle.openpgp.PGPSecretKeyRing;
+import org.pgpainless.PGPainless;
+import org.pgpainless.key.protection.SecretKeyRingProtector;
 
 public class TestSuiteGenerator {
 
@@ -43,10 +44,12 @@ public class TestSuiteGenerator {
 
         List<TestCase> tests = new ArrayList<>();
         tests.add(baseCase(structure));
+        tests.add(baseCaseMultipleCertificates(structure));
         tests.add(wrongUserId(structure));
         tests.add(noUserId(structure));
         tests.addAll(baseCaseMultiUserIds(structure));
         tests.add(secretKeyMaterial(structure));
+        tests.add(randomBytes(structure));
 
         return new TestSuite("0.1", tests);
     }
@@ -75,18 +78,15 @@ public class TestSuiteGenerator {
         String description = "Certificate has a single, valid user-id '" + userId + "'";
 
         PGPPublicKeyRing publicKeys = certificate(userId);
-        URI lookupUri = directoryStructure.getAddress(lookupMail);
-        Path path = directoryStructure.getRelativeCertificatePath(lookupMail);
-        File file = directoryStructure.resolve(path);
-        if (!file.exists() && !file.createNewFile()) {
-            throw new IOException("Cannot create file " + file.getAbsolutePath());
-        }
 
-        try (FileOutputStream fileOut = new FileOutputStream(file)) {
-            publicKeys.encode(fileOut);
-        }
+        writeDataFor(lookupMail, directoryStructure, new DataSink() {
+            @Override
+            public void write(OutputStream outputStream) throws IOException {
+                publicKeys.encode(outputStream);
+            }
+        });
 
-        return new TestCase(true, "Base Case", description, lookupMail, path, lookupUri);
+        return TestCase.ok("Base Csae", description, lookupMail, directoryStructure);
     }
 
     private List<TestCase> baseCaseMultiUserIds(WkdDirectoryStructure directoryStructure) throws Exception {
@@ -103,32 +103,43 @@ public class TestSuiteGenerator {
                 .addUserId(secondaryUserId, protector)
                 .done();
         PGPPublicKeyRing publicKeys = PGPainless.extractCertificate(secretKeys);
+        DataSink sink = new DataSink() {
+            @Override
+            public void write(OutputStream outputStream) throws IOException {
+                publicKeys.encode(outputStream);
+            }
+        };
 
-        Path primaryPath = directoryStructure.getRelativeCertificatePath(primaryLookupMail);
-        Path secondaryPath = directoryStructure.getRelativeCertificatePath(secondaryLookupMail);
-        File primaryFile = directoryStructure.resolve(primaryPath);
-        File secondaryFile = directoryStructure.resolve(secondaryPath);
-
-        if (!primaryFile.exists() && !primaryFile.createNewFile()) {
-            throw new IOException("Cannot create file " + primaryFile.getAbsolutePath());
-        }
-        if (!secondaryFile.exists() && !secondaryFile.createNewFile()) {
-            throw new IOException("Cannot create file " + secondaryFile.getAbsolutePath());
-        }
-
-        try (FileOutputStream fileOut = new FileOutputStream(primaryFile)) {
-            publicKeys.encode(fileOut);
-        }
-        try (FileOutputStream fileOut = new FileOutputStream(secondaryFile)) {
-            publicKeys.encode(fileOut);
-        }
+        writeDataFor(primaryLookupMail, directoryStructure, sink);
+        writeDataFor(secondaryLookupMail, directoryStructure, sink);
 
         return Arrays.asList(
-                new TestCase(true, "Multi-User-ID - Primary User-ID Lookup",
-                        primaryDescription, primaryLookupMail, primaryPath, directoryStructure.getAddress(primaryLookupMail)),
-                new TestCase(true, "Multi-User-ID - Secondary User-ID Lookup",
-                        secondaryDescription, secondaryLookupMail, secondaryPath, directoryStructure.getAddress(secondaryLookupMail))
+                TestCase.ok("Multi-User-ID - Primary User-ID Lookup",
+                        primaryDescription, primaryLookupMail, directoryStructure),
+                TestCase.ok("Multi-User-ID - Secondary User-ID Lookup",
+                        secondaryDescription, secondaryLookupMail, directoryStructure)
         );
+    }
+
+    private TestCase baseCaseMultipleCertificates(WkdDirectoryStructure directoryStructure) throws Exception {
+        String title = "Multiple Certificates";
+        String description = "The result contains multiple certificates.";
+        String lookupMail = "multiple-certificates@" + domain;
+        String userId1 = "First Certificate <" + lookupMail + ">";
+        String userId2 = "Second Certificate <" + lookupMail + ">";
+
+        PGPPublicKeyRing cert1 = certificate(userId1);
+        PGPPublicKeyRing cert2 = certificate(userId2);
+
+        writeDataFor(lookupMail, directoryStructure, new DataSink() {
+            @Override
+            public void write(OutputStream outputStream) throws IOException {
+                cert1.encode(outputStream);
+                cert2.encode(outputStream);
+            }
+        });
+
+        return TestCase.ok(title, description, lookupMail, directoryStructure);
     }
 
     private TestCase wrongUserId(WkdDirectoryStructure directoryStructure) throws Exception {
@@ -136,18 +147,15 @@ public class TestSuiteGenerator {
         String userId = "WKD-Test Different User-ID <different-userid@" + domain + ">";
         String description = "Certificate has a single, valid user-id '" + userId + "', but is deposited for mail address '" + lookupMail + "'.";
         PGPPublicKeyRing publicKeys = certificate(userId);
-        Path path = directoryStructure.getRelativeCertificatePath(lookupMail);
-        File file = directoryStructure.resolve(path);
 
-        if (!file.exists() && !file.createNewFile()) {
-            throw new IOException("Cannot create file " + file.getAbsolutePath());
-        }
+        writeDataFor(lookupMail, directoryStructure, new DataSink() {
+            @Override
+            public void write(OutputStream outputStream) throws IOException {
+                publicKeys.encode(outputStream);
+            }
+        });
 
-        try (FileOutputStream fileOut = new FileOutputStream(file)) {
-            publicKeys.encode(fileOut);
-        }
-
-        return new TestCase(false, "Wrong User-ID", description, lookupMail, path, directoryStructure.getAddress(lookupMail));
+        return TestCase.fail("Wrong User-ID", description, lookupMail, directoryStructure);
     }
 
     private TestCase noUserId(WkdDirectoryStructure directoryStructure) throws Exception {
@@ -167,19 +175,15 @@ public class TestSuiteGenerator {
         }
         publicKeys = new PGPPublicKeyRing(keys);
 
+        PGPPublicKeyRing finalPublicKeys = publicKeys;
+        writeDataFor(lookupMail, directoryStructure, new DataSink() {
+            @Override
+            public void write(OutputStream outputStream) throws IOException {
+                finalPublicKeys.encode(outputStream);
+            }
+        });
 
-        Path path = directoryStructure.getRelativeCertificatePath(lookupMail);
-        File file = directoryStructure.resolve(path);
-
-        if (!file.exists() && !file.createNewFile()) {
-            throw new IOException("Cannot create file " + file.getAbsolutePath());
-        }
-
-        try (FileOutputStream fileOut = new FileOutputStream(file)) {
-            publicKeys.encode(fileOut);
-        }
-
-        return new TestCase(false, "No User-ID", description, lookupMail, path, directoryStructure.getAddress(lookupMail));
+        return TestCase.fail("No User-ID", description, lookupMail, directoryStructure);
     }
 
     private TestCase secretKeyMaterial(WkdDirectoryStructure directoryStructure) throws Exception {
@@ -187,18 +191,47 @@ public class TestSuiteGenerator {
         String description = "Certificate file contains secret key material.";
         PGPSecretKeyRing secretKeys = PGPainless.generateKeyRing().modernKeyRing("WKD-Test Secret Key <" + lookupMail + ">", null);
 
-        Path path = directoryStructure.getRelativeCertificatePath(lookupMail);
-        File file = directoryStructure.resolve(path);
+        writeDataFor(lookupMail, directoryStructure, new DataSink() {
+            @Override
+            public void write(OutputStream outputStream) throws IOException {
+                secretKeys.encode(outputStream);
+            }
+        });
+
+        return TestCase.fail("Secret Key Material", description, lookupMail, directoryStructure);
+    }
+
+    private TestCase randomBytes(WkdDirectoryStructure directoryStructure) throws IOException {
+        String lookupMail = "random-bytes@" + domain;
+        String description = "Certificate file contains random bytes.";
+
+        Random random = new Random(); // No need for Secure Random here
+
+        writeDataFor(lookupMail, directoryStructure, outputStream -> {
+            byte[] buf = new byte[random.nextInt(65536)];
+            random.nextBytes(buf);
+            outputStream.write(buf);
+        });
+
+        return TestCase.fail("Random Bytes", description, lookupMail, directoryStructure);
+    }
+
+    private void writeDataFor(String mailAddress, WkdDirectoryStructure directory, DataSink sink)
+            throws IOException {
+        Path path = directory.getRelativeCertificatePath(mailAddress);
+        File file = directory.resolve(path);
 
         if (!file.exists() && !file.createNewFile()) {
             throw new IOException("Cannot create file " + file.getAbsolutePath());
         }
 
         try (FileOutputStream fileOut = new FileOutputStream(file)) {
-            secretKeys.encode(fileOut);
+            sink.write(fileOut);
         }
+    }
 
-        return new TestCase(false, "Secret Key Material", description, lookupMail, path, directoryStructure.getAddress(lookupMail));
+    private interface DataSink {
+        void write(OutputStream outputStream) throws IOException;
     }
 
 }

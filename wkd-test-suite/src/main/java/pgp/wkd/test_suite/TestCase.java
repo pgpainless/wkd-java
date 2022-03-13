@@ -25,6 +25,18 @@ public class TestCase {
         this.lookupUri = lookupUri;
     }
 
+    public static TestCase ok(String title, String description, String lookupMail, WkdDirectoryStructure structure) {
+        Path filePath = structure.getRelativeCertificatePath(lookupMail);
+        URI certUri = structure.getAddress(lookupMail);
+        return new TestCase(true, title, description, lookupMail, filePath, certUri);
+    }
+
+    public static TestCase fail(String title, String description, String lookupMail, WkdDirectoryStructure structure) {
+        Path filePath = structure.getRelativeCertificatePath(lookupMail);
+        URI certUri = structure.getAddress(lookupMail);
+        return new TestCase(false, title, description, lookupMail, filePath, certUri);
+    }
+
     public boolean isExpectSuccess() {
         return expectSuccess;
     }
