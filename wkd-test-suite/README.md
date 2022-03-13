@@ -6,6 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # WKD Test Suite Generator
 
+[![javadoc](https://javadoc.io/badge2/org.pgpainless/wkd-test-suite/javadoc.svg)](https://javadoc.io/doc/org.pgpainless/wkd-test-suite)
+[![Maven Central](https://badgen.net/maven/v/maven-central/org.pgpainless/wkd-test-suite)](https://search.maven.org/artifact/org.pgpainless/wkd-test-suite)
+
 This module contains a CLI application that can be used to generate WKD test vectors.
 
 ```shell
