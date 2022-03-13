@@ -22,6 +22,7 @@ import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.bouncycastle.openpgp.PGPSecretKeyRing;
+import org.bouncycastle.openpgp.PGPSignature;
 import org.pgpainless.PGPainless;
 import org.pgpainless.key.protection.SecretKeyRingProtector;
 
@@ -47,6 +48,7 @@ public class TestSuiteGenerator {
         tests.add(baseCaseMultipleCertificates(structure));
         tests.add(wrongUserId(structure));
         tests.add(noUserId(structure));
+        tests.add(unboundUserId(structure));
         tests.addAll(baseCaseMultiUserIds(structure));
         tests.add(secretKeyMaterial(structure));
         tests.add(randomBytes(structure));
@@ -156,6 +158,36 @@ public class TestSuiteGenerator {
         });
 
         return TestCase.fail("Wrong User-ID", description, lookupMail, directoryStructure);
+    }
+
+    private TestCase unboundUserId(WkdDirectoryStructure directoryStructure) throws Exception {
+        String lookupMail = "unbound-userid@" + domain;
+        String userId = "WKD-Test Unbound User-ID <" + lookupMail + ">";
+        String description = "Certificate has a single User-ID '" + userId + "' without binding signature.";
+        PGPPublicKeyRing publicKeys = certificate(userId);
+
+        Iterator<PGPPublicKey> keyIterator = publicKeys.iterator();
+        PGPPublicKey primaryKey = keyIterator.next();
+        Iterator<PGPSignature> bindingSigs = primaryKey.getSignaturesForID(userId);
+        while (bindingSigs.hasNext()) {
+            primaryKey = PGPPublicKey.removeCertification(primaryKey, userId, bindingSigs.next());
+        }
+
+        List<PGPPublicKey> keys = new ArrayList<>();
+        keys.add(primaryKey);
+        while (keyIterator.hasNext()) {
+            keys.add(keyIterator.next());
+        }
+
+        PGPPublicKeyRing certificateWithoutUserIdBinding = new PGPPublicKeyRing(keys);
+        writeDataFor(lookupMail, directoryStructure, new DataSink() {
+            @Override
+            public void write(OutputStream outputStream) throws IOException {
+                certificateWithoutUserIdBinding.encode(outputStream);
+            }
+        });
+
+        return TestCase.fail("Unbound UserId", description, lookupMail, directoryStructure);
     }
 
     private TestCase noUserId(WkdDirectoryStructure directoryStructure) throws Exception {
