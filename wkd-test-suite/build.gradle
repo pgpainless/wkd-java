@@ -32,21 +32,9 @@ dependencies {
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
 }
-mainClassName = 'pgp.wkd.test_suite.Main'
 
-jar {
-    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
-    manifest {
-        attributes 'Main-Class': "$mainClassName"
-    }
-
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    } {
-        exclude "META-INF/*.SF"
-        exclude "META-INF/*.DSA"
-        exclude "META-INF/*.RSA"
-    }
+application {
+    mainClass = 'pgp.wkd.test_suite.Main'
 }
 
 test {
