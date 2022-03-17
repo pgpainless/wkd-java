@@ -6,10 +6,7 @@ package pgp.wkd.cli.test_suite;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
-import org.junit.platform.commons.logging.Logger;
-import org.junit.platform.commons.logging.LoggerFactory;
 import pgp.wkd.cli.WKDCLI;
 import pgp.wkd.cli.command.Fetch;
 import pgp.wkd.test_suite.TestCase;
@@ -26,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class TestSuiteTestRunner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestSuiteTestRunner.class);
     private static TestSuite suite;
 
     @BeforeAll
@@ -49,22 +45,23 @@ public class TestSuiteTestRunner {
     public Iterable<DynamicTest> testsFromTestSuite() {
         return suite.getTestCases()
                 .stream()
-                .map(testCase -> DynamicTest.dynamicTest(
-                        testCase.getTestTitle(),
-                        () -> {
-                            String mail = testCase.getLookupMailAddress();
-
-                            int exitCode = WKDCLI.execute(new String[] {
-                                    "fetch", "--armor", mail
-                            });
-
-                            if (testCase.isExpectSuccess()) {
-                                assertEquals(0, exitCode, testCase.getTestDescription());
-                            } else {
-                                assertNotEquals(0, exitCode, testCase.getTestDescription());
-                            }
-                        }
-                ))
+                .map(TestSuiteTestRunner::toDynamicTest)
                 .collect(Collectors.toList());
+    }
+
+    public static DynamicTest toDynamicTest(TestCase testCase) {
+        return DynamicTest.dynamicTest(testCase.getTestTitle(), () -> {
+
+            String mail = testCase.getLookupMailAddress();
+            int exitCode = WKDCLI.execute(new String[] {
+                    "fetch", "--armor", mail
+            });
+
+            if (testCase.isExpectSuccess()) {
+                assertEquals(0, exitCode, testCase.getTestDescription());
+            } else {
+                assertNotEquals(0, exitCode, testCase.getTestDescription());
+            }
+        });
     }
 }

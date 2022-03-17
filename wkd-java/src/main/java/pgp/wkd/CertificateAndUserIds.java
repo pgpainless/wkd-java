@@ -16,7 +16,7 @@ public class CertificateAndUserIds {
 
     private final Certificate certificate;
     private final List<String> userIds;
-    
+
     public CertificateAndUserIds(Certificate certificate, List<String> userIds) {
         this.certificate = certificate;
         this.userIds = userIds;
