@@ -2,29 +2,33 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package pgp.wkd;
+package pgp.wkd.discovery;
 
 import pgp.certificate_store.Certificate;
+import pgp.wkd.CertificateAndUserIds;
+import pgp.wkd.MissingUserIdException;
+import pgp.wkd.RejectedCertificate;
+import pgp.wkd.WKDAddress;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AbstractDiscover implements Discover {
+public class CertificateDiscoveryImplementation implements CertificateDiscoverer {
 
-    protected final CertificateReader reader;
-    protected final WKDFetcher fetcher;
+    protected final CertificateParser reader;
+    protected final CertificateFetcher fetcher;
 
-    public AbstractDiscover(CertificateReader reader, WKDFetcher fetcher) {
+    public CertificateDiscoveryImplementation(CertificateParser reader, CertificateFetcher fetcher) {
         this.reader = reader;
         this.fetcher = fetcher;
     }
 
     @Override
-    public WKDDiscoveryItem discover(DiscoveryMethod method, WKDAddress address) {
+    public DiscoveryResponse discover(DiscoveryMethod method, WKDAddress address) {
         try {
-            InputStream inputStream = fetcher.fetch(address, method);
+            InputStream inputStream = fetcher.fetchCertificate(address, method);
             List<CertificateAndUserIds> fetchedCertificates = reader.read(inputStream);
 
             List<RejectedCertificate> rejectedCertificates = new ArrayList<>();
@@ -50,10 +54,10 @@ public class AbstractDiscover implements Discover {
                 }
             }
 
-            return WKDDiscoveryItem.success(method, address, acceptableCertificates, rejectedCertificates);
+            return DiscoveryResponse.success(method, address, acceptableCertificates, rejectedCertificates);
 
         } catch (IOException e) {
-            return WKDDiscoveryItem.failure(method, address, e);
+            return DiscoveryResponse.failure(method, address, e);
         }
     }
 }

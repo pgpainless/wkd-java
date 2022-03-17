@@ -10,6 +10,7 @@ group 'org.pgpainless'
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
@@ -20,7 +21,7 @@ dependencies {
     testImplementation 'com.ginsberg:junit5-system-exit:1.1.2'
     testImplementation 'org.mockito:mockito-core:4.3.1'
 
-    implementation("org.pgpainless:pgpainless-cert-d:0.1.0")
+    implementation("org.pgpainless:pgpainless-cert-d:0.1.1")
     implementation project(':wkd-java')
     implementation "info.picocli:picocli:4.6.3"
 

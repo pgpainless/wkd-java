@@ -7,13 +7,13 @@ package pgp.wkd.cli.command;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.util.io.Streams;
 import pgp.certificate_store.Certificate;
-import pgp.wkd.Discover;
-import pgp.wkd.HttpUrlConnectionWKDFetcher;
+import pgp.wkd.discovery.CertificateDiscoverer;
+import pgp.wkd.discovery.HttpUrlConnectionCertificateFetcher;
 import pgp.wkd.MalformedUserIdException;
 import pgp.wkd.WKDAddress;
 import pgp.wkd.WKDAddressHelper;
-import pgp.wkd.WKDDiscoveryResult;
-import pgp.wkd.WKDFetcher;
+import pgp.wkd.discovery.DiscoveryResult;
+import pgp.wkd.discovery.CertificateFetcher;
 import pgp.wkd.cli.CertNotFetchableException;
 import pgp.wkd.cli.DiscoverImpl;
 import picocli.CommandLine;
@@ -42,14 +42,14 @@ public class Fetch implements Runnable {
     boolean armor = false;
 
     // TODO: Better way to inject fetcher implementation
-    public static WKDFetcher fetcher = new HttpUrlConnectionWKDFetcher();
+    public static CertificateFetcher fetcher = new HttpUrlConnectionCertificateFetcher();
 
     @Override
     public void run() {
-        Discover discover = new DiscoverImpl(fetcher);
+        CertificateDiscoverer certificateDiscoverer = new DiscoverImpl(fetcher);
 
         WKDAddress address = addressFromUserId(userId);
-        WKDDiscoveryResult result = discover.discover(address);
+        DiscoveryResult result = certificateDiscoverer.discover(address);
 
         if (!result.isSuccessful()) {
             throw new CertNotFetchableException("Cannot fetch cert.");

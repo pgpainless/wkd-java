@@ -23,6 +23,9 @@ dependencies {
 
     // Z-Base32
     implementation 'com.sandinh:zbase32-commons-codec:1.0.0'
+
+    // @Nullable etc.
+    implementation "com.google.code.findbugs:jsr305:3.0.2"
 }
 
 test {

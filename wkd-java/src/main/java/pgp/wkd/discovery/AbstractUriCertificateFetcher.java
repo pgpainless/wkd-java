@@ -2,26 +2,27 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package pgp.wkd;
+package pgp.wkd.discovery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pgp.wkd.WKDAddress;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-public abstract class AbstractUriWKDFetcher implements WKDFetcher {
+public abstract class AbstractUriCertificateFetcher implements CertificateFetcher {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WKDFetcher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CertificateFetcher.class);
 
     @Override
-    public InputStream fetch(WKDAddress address, DiscoveryMethod method) throws IOException {
+    public InputStream fetchCertificate(WKDAddress address, DiscoveryMethod method) throws IOException {
         URI uri = address.getUri(method);
         try {
-            return fetchUri(uri);
+            return fetchFromUri(uri);
         } catch (IOException e) {
-            LOGGER.debug("Could not fetch key using " + method + " method from " + uri.toString(), e);
+            LOGGER.debug("Could not fetch key using " + method + " method from " + uri, e);
             throw e;
         }
     }
@@ -34,6 +35,6 @@ public abstract class AbstractUriWKDFetcher implements WKDFetcher {
      * @throws java.net.ConnectException in case the file or host does not exist
      * @throws IOException in case of an IO-error
      */
-    protected abstract InputStream fetchUri(URI uri) throws IOException;
+    protected abstract InputStream fetchFromUri(URI uri) throws IOException;
 
 }

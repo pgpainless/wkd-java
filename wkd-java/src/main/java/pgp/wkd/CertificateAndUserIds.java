@@ -9,20 +9,33 @@ import pgp.certificate_store.Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Tuple class which bundles a {@link Certificate} and a list of its valid or expired user ids.
+ */
 public class CertificateAndUserIds {
 
     private final Certificate certificate;
     private final List<String> userIds;
-
+    
     public CertificateAndUserIds(Certificate certificate, List<String> userIds) {
         this.certificate = certificate;
         this.userIds = userIds;
     }
 
+    /**
+     * Return a list containing the valid or expired user-ids of the certificate.
+     *
+     * @return user ids
+     */
     public List<String> getUserIds() {
         return new ArrayList<>(userIds);
     }
 
+    /**
+     * Return the certificate itself.
+     *
+     * @return certificate
+     */
     public Certificate getCertificate() {
         return certificate;
     }

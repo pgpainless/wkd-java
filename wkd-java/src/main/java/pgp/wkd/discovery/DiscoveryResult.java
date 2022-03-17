@@ -2,25 +2,27 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package pgp.wkd;
+package pgp.wkd.discovery;
 
 import pgp.certificate_store.Certificate;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WKDDiscoveryResult {
+public class DiscoveryResult {
 
-    private List<WKDDiscoveryItem> items;
+    private List<DiscoveryResponse> items;
 
-    public WKDDiscoveryResult(List<WKDDiscoveryItem> items) {
+    public DiscoveryResult(@Nonnull List<DiscoveryResponse> items) {
         this.items = items;
     }
 
+    @Nonnull
     public List<Certificate> getCertificates() {
         List<Certificate> certificates = new ArrayList<>();
 
-        for (WKDDiscoveryItem item : items) {
+        for (DiscoveryResponse item : items) {
             if (item.isSuccessful()) {
                 certificates.addAll(item.getCertificates());
             }
@@ -29,7 +31,7 @@ public class WKDDiscoveryResult {
     }
 
     public boolean isSuccessful() {
-        for (WKDDiscoveryItem item : items) {
+        for (DiscoveryResponse item : items) {
             if (item.isSuccessful() && item.hasCertificates()) {
                 return true;
             }
@@ -37,13 +39,15 @@ public class WKDDiscoveryResult {
         return false;
     }
 
-    public List<WKDDiscoveryItem> getItems() {
+    @Nonnull
+    public List<DiscoveryResponse> getItems() {
         return items;
     }
 
-    public List<WKDDiscoveryItem> getFailedItems() {
-        List<WKDDiscoveryItem> fails = new ArrayList<>();
-        for (WKDDiscoveryItem item : items) {
+    @Nonnull
+    public List<DiscoveryResponse> getFailedItems() {
+        List<DiscoveryResponse> fails = new ArrayList<>();
+        for (DiscoveryResponse item : items) {
             if (!item.isSuccessful()) {
                 fails.add(item);
             }

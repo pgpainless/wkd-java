@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package pgp.wkd;
+package pgp.wkd.discovery;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,11 +12,11 @@ import java.net.URI;
 import java.net.URL;
 
 /**
- * Implementation of {@link WKDFetcher} using Java's {@link HttpURLConnection}.
+ * Implementation of {@link CertificateFetcher} using Java's {@link HttpURLConnection}.
  */
-public class HttpUrlConnectionWKDFetcher extends AbstractUriWKDFetcher {
+public class HttpUrlConnectionCertificateFetcher extends AbstractUriCertificateFetcher {
 
-    public InputStream fetchUri(URI uri) throws IOException {
+    public InputStream fetchFromUri(URI uri) throws IOException {
         URL url = uri.toURL();
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");

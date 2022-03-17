@@ -12,14 +12,14 @@ import org.pgpainless.certificate_store.CertificateFactory;
 import org.pgpainless.key.info.KeyRingInfo;
 import pgp.certificate_store.Certificate;
 import pgp.wkd.CertificateAndUserIds;
-import pgp.wkd.CertificateReader;
+import pgp.wkd.discovery.CertificateParser;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CertificateReaderImpl implements CertificateReader {
+public class CertificateParserImpl implements CertificateParser {
     @Override
     public List<CertificateAndUserIds> read(InputStream inputStream) throws IOException {
         List<CertificateAndUserIds> certificatesAndUserIds = new ArrayList<>();

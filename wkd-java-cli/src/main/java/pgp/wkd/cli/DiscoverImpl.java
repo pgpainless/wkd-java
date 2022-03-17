@@ -1,21 +1,21 @@
 package pgp.wkd.cli;
 
-import pgp.wkd.AbstractDiscover;
-import pgp.wkd.CertificateReader;
-import pgp.wkd.HttpUrlConnectionWKDFetcher;
-import pgp.wkd.WKDFetcher;
+import pgp.wkd.discovery.CertificateDiscoveryImplementation;
+import pgp.wkd.discovery.CertificateParser;
+import pgp.wkd.discovery.HttpUrlConnectionCertificateFetcher;
+import pgp.wkd.discovery.CertificateFetcher;
 
-public class DiscoverImpl extends AbstractDiscover {
+public class DiscoverImpl extends CertificateDiscoveryImplementation {
 
     public DiscoverImpl() {
-        super(new CertificateReaderImpl(), new HttpUrlConnectionWKDFetcher());
+        super(new CertificateParserImpl(), new HttpUrlConnectionCertificateFetcher());
     }
 
-    public DiscoverImpl(WKDFetcher fetcher) {
-        super(new CertificateReaderImpl(), fetcher);
+    public DiscoverImpl(CertificateFetcher fetcher) {
+        super(new CertificateParserImpl(), fetcher);
     }
 
-    public DiscoverImpl(CertificateReader certificateReader, WKDFetcher fetcher) {
-        super(certificateReader, fetcher);
+    public DiscoverImpl(CertificateParser certificateParser, CertificateFetcher fetcher) {
+        super(certificateParser, fetcher);
     }
 }

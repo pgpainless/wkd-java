@@ -5,7 +5,9 @@
 package pgp.wkd;
 
 import org.apache.commons.codec.binary.ZBase32;
+import pgp.wkd.discovery.DiscoveryMethod;
 
+import javax.annotation.Nonnull;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -26,7 +28,7 @@ public final class WKDAddress {
     private static final String SCHEME = "https://";
     private static final String ADV_SUBDOMAIN = "openpgpkey.";
     private static final String DIRECT_WELL_KNOWN = "/.well-known/openpgpkey/hu/";
-    private static String ADV_WELL_KNOWN(String domain) {
+    private static String ADV_WELL_KNOWN(@Nonnull String domain) {
         return "/.well-known/openpgpkey/" + domain + "/hu/";
     }
 
@@ -40,6 +42,7 @@ public final class WKDAddress {
     private static final Pattern PATTERN_DOMAIN_PART = Pattern.compile("[a-zA-Z0-9.-]+$");
 
     // Android API lvl 10 does not yet know StandardCharsets.UTF_8 :/
+    @SuppressWarnings("CharsetObjectCanBeUsed")
     private static final Charset utf8 = Charset.forName("UTF8");
     // Z-Base32 encoding is described in https://www.rfc-editor.org/rfc/rfc6189.html#section-5.1.6
     private static final ZBase32 zBase32 = new ZBase32();
@@ -70,14 +73,17 @@ public final class WKDAddress {
      * @param domainPart domain part of the email address, case-insensitive
      *
      * @return WKD address
+     * @throws IllegalArgumentException in case of malformed local or domain part
      */
-    public static WKDAddress fromLocalAndDomainPart(String localPart, String domainPart) {
+    @Nonnull
+    public static WKDAddress fromLocalAndDomainPart(@Nonnull String localPart, @Nonnull String domainPart) {
         if (!PATTERN_LOCAL_PART.matcher(localPart).matches()) {
             throw new IllegalArgumentException("Invalid local part.");
         }
         if (!PATTERN_DOMAIN_PART.matcher(domainPart).matches()) {
             throw new IllegalArgumentException("Invalid domain part.");
         }
+
         return new WKDAddress(localPart, domainPart);
     }
 
@@ -87,20 +93,35 @@ public final class WKDAddress {
      * @param email email address, case sensitive
      * @return WKDAddress object
      */
-    public static WKDAddress fromEmail(String email) throws MalformedUserIdException {
+    public static WKDAddress fromEmail(@Nonnull String email) throws MalformedUserIdException {
         MailAddress mailAddress = parseMailAddress(email);
         return new WKDAddress(mailAddress.getLocalPart(), mailAddress.getDomainPart());
     }
 
-    public URI getUri(DiscoveryMethod method) {
-        if (method == DiscoveryMethod.advanced) {
-            return getAdvancedMethodURI();
-        } else if (method == DiscoveryMethod.direct) {
-            return getDirectMethodURI();
+    /**
+     * Return the {@link URI} for the respective {@link DiscoveryMethod}.
+     *
+     * @param method discovery method
+     * @return uri of the certificate
+     */
+    @Nonnull
+    public URI getUri(@Nonnull DiscoveryMethod method) {
+        switch (method) {
+            case advanced:
+                return getAdvancedMethodURI();
+            case direct:
+                return getDirectMethodURI();
+            default:
+                throw new IllegalArgumentException("Invalid discovery method: " + method);
         }
-        throw new IllegalArgumentException("Invalid discovery method.");
     }
 
+    /**
+     * Return the email address from which the {@link WKDAddress} was created.
+     *
+     * @return email address
+     */
+    @Nonnull
     public String getEmail() {
         return localPart + '@' + domainPart;
     }
@@ -117,6 +138,7 @@ public final class WKDAddress {
      *
      * @return URI using the direct lookup method
      */
+    @Nonnull
     public URI getDirectMethodURI() {
         return URI.create(SCHEME + domainPart + DIRECT_WELL_KNOWN + zbase32LocalPart + "?l=" + percentEncodedLocalPart);
     }
@@ -133,6 +155,7 @@ public final class WKDAddress {
      *
      * @return URI using the advanced lookup method
      */
+    @Nonnull
     public URI getAdvancedMethodURI() {
         return URI.create(SCHEME + ADV_SUBDOMAIN + domainPart + ADV_WELL_KNOWN(domainPart) + zbase32LocalPart + "?l=" + percentEncodedLocalPart);
     }
@@ -143,7 +166,8 @@ public final class WKDAddress {
      * @param string string
      * @return zbase32 encoded sha1 sum of the string
      */
-    private String sha1AndZBase32Encode(String string) {
+    @Nonnull
+    private String sha1AndZBase32Encode(@Nonnull String string) {
         String lowerCase = string.toLowerCase();
         byte[] bytes = lowerCase.getBytes(utf8);
 
@@ -166,7 +190,8 @@ public final class WKDAddress {
      * @param string string
      * @return percent encoded string
      */
-    private String percentEncode(String string) {
+    @Nonnull
+    private String percentEncode(@Nonnull String string) {
         try {
             return URLEncoder.encode(string, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -181,7 +206,9 @@ public final class WKDAddress {
      * @param email email address string
      * @return validated and split mail address
      */
-    private static MailAddress parseMailAddress(String email) throws MalformedUserIdException {
+    @Nonnull
+    private static MailAddress parseMailAddress(@Nonnull String email)
+            throws MalformedUserIdException {
         Matcher matcher = PATTERN_EMAIL.matcher(email);
         if (!matcher.matches()) {
             throw new MalformedUserIdException("Invalid email address.");
@@ -207,7 +234,7 @@ public final class WKDAddress {
          * @param localPart local part
          * @param domainPart domain part
          */
-        MailAddress(String localPart, String domainPart) {
+        MailAddress(@Nonnull String localPart, @Nonnull String domainPart) {
             this.localPart = localPart;
             this.domainPart = domainPart;
         }
@@ -218,6 +245,7 @@ public final class WKDAddress {
          *
          * @return local part
          */
+        @Nonnull
         public String getLocalPart() {
             return localPart;
         }
@@ -228,6 +256,7 @@ public final class WKDAddress {
          *
          * @return domain part
          */
+        @Nonnull
         public String getDomainPart() {
             return domainPart;
         }

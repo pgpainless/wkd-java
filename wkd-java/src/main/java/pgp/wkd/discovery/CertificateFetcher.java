@@ -2,7 +2,9 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package pgp.wkd;
+package pgp.wkd.discovery;
+
+import pgp.wkd.WKDAddress;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +13,7 @@ import java.io.InputStream;
  * Abstract class for fetching OpenPGP certificates from the WKD.
  * This class can be extended to fetch files from remote servers using different HTTP clients.
  */
-public interface WKDFetcher {
+public interface CertificateFetcher {
 
     /**
      * Attempt to fetch an OpenPGP certificate from the Web Key Directory.
@@ -21,5 +23,5 @@ public interface WKDFetcher {
      *
      * @throws IOException in case of an error
      */
-    InputStream fetch(WKDAddress address, DiscoveryMethod method) throws IOException;
+    InputStream fetchCertificate(WKDAddress address, DiscoveryMethod method) throws IOException;
 }

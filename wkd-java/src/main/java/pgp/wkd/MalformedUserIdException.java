@@ -4,6 +4,10 @@
 
 package pgp.wkd;
 
+/**
+ * Exception that gets thrown when the application is presented with a malformed user-id.
+ * A malformed user-id is a user-id which does not contain an email address.
+ */
 public class MalformedUserIdException extends RuntimeException {
 
     public MalformedUserIdException(String message) {

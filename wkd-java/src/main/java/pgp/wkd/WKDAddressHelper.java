@@ -4,6 +4,7 @@
 
 package pgp.wkd;
 
+import javax.annotation.Nonnull;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +32,9 @@ public class WKDAddressHelper {
      * @throws IllegalArgumentException in case the user-id does not match the expected format
      * and does not contain an email address.
      */
-    public static String emailFromUserId(String userId) throws MalformedUserIdException {
+    @Nonnull
+    public static String emailFromUserId(String userId)
+            throws MalformedUserIdException {
         Matcher matcher = PATTERN_USER_ID.matcher(userId);
         if (!matcher.matches()) {
             throw new MalformedUserIdException("User-ID does not follow excepted pattern \"Firstname Lastname <email.address> [Optional Comment]\"");
@@ -47,7 +50,9 @@ public class WKDAddressHelper {
      * @param userId user-id
      * @return WKD address for the user-id's email address.
      */
-    public static WKDAddress wkdAddressFromUserId(String userId) throws MalformedUserIdException {
+    @Nonnull
+    public static WKDAddress wkdAddressFromUserId(String userId)
+            throws MalformedUserIdException {
         String email = emailFromUserId(userId);
         return WKDAddress.fromEmail(email);
     }
