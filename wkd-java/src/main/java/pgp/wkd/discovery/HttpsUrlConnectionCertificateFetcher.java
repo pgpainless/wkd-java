@@ -4,6 +4,7 @@
 
 package pgp.wkd.discovery;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ConnectException;
@@ -14,11 +15,11 @@ import java.net.URL;
 /**
  * Implementation of {@link CertificateFetcher} using Java's {@link HttpURLConnection}.
  */
-public class HttpUrlConnectionCertificateFetcher extends AbstractUriCertificateFetcher {
+public class HttpsUrlConnectionCertificateFetcher extends AbstractUriCertificateFetcher {
 
     public InputStream fetchFromUri(URI uri) throws IOException {
         URL url = uri.toURL();
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         con.setRequestMethod("GET");
 
         con.setConnectTimeout(5000);
@@ -27,7 +28,7 @@ public class HttpUrlConnectionCertificateFetcher extends AbstractUriCertificateF
 
         int status = con.getResponseCode();
         if (status != 200) {
-            throw new ConnectException("Connecting to '" + uri + "' failed. Status: " + status);
+            throw new ConnectException("Connecting to URL '" + uri + "' failed. Status: " + status);
         }
         return con.getInputStream();
     }

@@ -19,7 +19,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CertificateParserImpl implements CertificateParser {
+public class PGPainlessCertificateParser implements CertificateParser {
     @Override
     public List<CertificateAndUserIds> read(InputStream inputStream) throws IOException {
         List<CertificateAndUserIds> certificatesAndUserIds = new ArrayList<>();

@@ -15,12 +15,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CertificateDiscoveryImplementation implements CertificateDiscoverer {
+public class DefaultCertificateDiscoverer implements CertificateDiscoverer {
 
     protected final CertificateParser reader;
     protected final CertificateFetcher fetcher;
 
-    public CertificateDiscoveryImplementation(CertificateParser reader, CertificateFetcher fetcher) {
+    public DefaultCertificateDiscoverer(CertificateParser reader, CertificateFetcher fetcher) {
         this.reader = reader;
         this.fetcher = fetcher;
     }
