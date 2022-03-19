@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import pgp.wkd.discovery.DiscoveryMethod;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -49,7 +50,7 @@ public class Main implements Runnable {
     @CommandLine.Option(names = {"--method", "-m"},
             paramLabel = "{direct|advanced}",
             description = "Method for key discovery. If absent, assume direct.")
-    private TestSuiteGenerator.Method method = TestSuiteGenerator.Method.direct;
+    private DiscoveryMethod method = DiscoveryMethod.direct;
 
     @CommandLine.Spec // injected by picocli
     CommandLine.Model.CommandSpec spec;

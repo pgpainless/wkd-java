@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import pgp.wkd.cli.WKDCLI;
 import pgp.wkd.cli.command.Fetch;
+import pgp.wkd.discovery.DiscoveryMethod;
 import pgp.wkd.test_suite.TestCase;
 import pgp.wkd.test_suite.TestSuite;
 import pgp.wkd.test_suite.TestSuiteGenerator;
@@ -35,7 +36,7 @@ public class TestSuiteTestRunner {
         // Generate test certificates inside the temp wkd
         String domain = "example.com";
         TestSuiteGenerator generator = new TestSuiteGenerator(domain);
-        suite = generator.generateTestSuiteInDirectory(tempFile, TestSuiteGenerator.Method.direct);
+        suite = generator.generateTestSuiteInDirectory(tempFile, DiscoveryMethod.direct);
 
         // Fetch certificates from a local directory instead of the internetzzz.
         Fetch.fetcher = new DirectoryBasedCertificateFetcher(tempPath);

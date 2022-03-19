@@ -25,13 +25,10 @@ import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import org.bouncycastle.openpgp.PGPSignature;
 import org.pgpainless.PGPainless;
 import org.pgpainless.key.protection.SecretKeyRingProtector;
+import pgp.wkd.discovery.DiscoveryMethod;
 
 public class TestSuiteGenerator {
 
-    public enum Method {
-        direct,
-        advanced
-    }
 
     private final String domain;
 
@@ -39,42 +36,26 @@ public class TestSuiteGenerator {
         this.domain = domain;
     }
 
-    public TestSuite generateTestSuiteInDirectory(File directory, Method method) throws Exception {
-        WkdDirectoryStructure structure = directoryStructureForMethod(directory, method);
-        structure.mkdirs();
+    public TestSuite generateTestSuiteInDirectory(File directory, DiscoveryMethod method) throws Exception {
+        WkdDirectoryStructure dirs = directoryStructureForMethod(directory, method);
+        dirs.mkdirs();
 
         List<TestCase> tests = new ArrayList<>();
-        tests.add(baseCase(structure));
-        tests.add(baseCaseMultipleCertificates(structure));
-        tests.add(wrongUserId(structure));
-        tests.add(noUserId(structure));
-        tests.add(unboundUserId(structure));
-        tests.addAll(baseCaseMultiUserIds(structure));
-        tests.add(secretKeyMaterial(structure));
-        tests.add(randomBytes(structure));
+        tests.add(test_baseCase(dirs));
+        tests.add(test_baseCaseMultipleCertificates(dirs));
+        tests.add(test_wrongUserId(dirs));
+        tests.add(test_noUserId(dirs));
+        tests.add(test_unboundUserId(dirs));
+        tests.addAll(test_baseCaseMultiUserIds(dirs));
+        tests.add(test_secretKeyMaterial(dirs));
+        tests.add(test_randomBytes(dirs));
 
         return new TestSuite("0.1", tests);
     }
 
-    private WkdDirectoryStructure directoryStructureForMethod(File directory, Method method) {
-        WkdDirectoryStructure structure;
-        if (method == Method.direct) {
-            structure = new WkdDirectoryStructure.DirectMethod(directory, domain);
-        } else if (method == Method.advanced) {
-            structure = new WkdDirectoryStructure.AdvancedMethod(directory, domain);
-        } else {
-            throw new IllegalArgumentException("Invalid value for parameter 'method'.");
-        }
-        return structure;
-    }
+    // TEST CASES
 
-    private PGPPublicKeyRing certificate(String userId) throws PGPException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        PGPSecretKeyRing secretKeys = PGPainless.generateKeyRing().modernKeyRing(userId, null);
-        PGPPublicKeyRing publicKeys = PGPainless.extractCertificate(secretKeys);
-        return publicKeys;
-    }
-
-    private TestCase baseCase(WkdDirectoryStructure directoryStructure) throws Exception {
+    private TestCase test_baseCase(WkdDirectoryStructure directoryStructure) throws Exception {
         String lookupMail = "base-case@" + domain;
         String userId = "WKD-Test Base Case <base-case@" + domain + ">";
         String description = "Certificate has a single, valid user-id '" + userId + "'";
@@ -88,10 +69,10 @@ public class TestSuiteGenerator {
             }
         });
 
-        return TestCase.ok("Base Csae", description, lookupMail, directoryStructure);
+        return TestCase.ok("Base Case", description, lookupMail, directoryStructure);
     }
 
-    private List<TestCase> baseCaseMultiUserIds(WkdDirectoryStructure directoryStructure) throws Exception {
+    private List<TestCase> test_baseCaseMultiUserIds(WkdDirectoryStructure directoryStructure) throws Exception {
         String primaryLookupMail = "primary-uid@" + domain;
         String secondaryLookupMail = "secondary-uid@" + domain;
         String primaryUserId = "WKD-Test Primary User-ID <" + primaryLookupMail + ">";
@@ -123,7 +104,7 @@ public class TestSuiteGenerator {
         );
     }
 
-    private TestCase baseCaseMultipleCertificates(WkdDirectoryStructure directoryStructure) throws Exception {
+    private TestCase test_baseCaseMultipleCertificates(WkdDirectoryStructure directoryStructure) throws Exception {
         String title = "Multiple Certificates";
         String description = "The result contains multiple certificates.";
         String lookupMail = "multiple-certificates@" + domain;
@@ -144,7 +125,7 @@ public class TestSuiteGenerator {
         return TestCase.ok(title, description, lookupMail, directoryStructure);
     }
 
-    private TestCase wrongUserId(WkdDirectoryStructure directoryStructure) throws Exception {
+    private TestCase test_wrongUserId(WkdDirectoryStructure directoryStructure) throws Exception {
         String lookupMail = "wrong-userid@" + domain;
         String userId = "WKD-Test Different User-ID <different-userid@" + domain + ">";
         String description = "Certificate has a single, valid user-id '" + userId + "', but is deposited for mail address '" + lookupMail + "'.";
@@ -160,7 +141,7 @@ public class TestSuiteGenerator {
         return TestCase.fail("Wrong User-ID", description, lookupMail, directoryStructure);
     }
 
-    private TestCase unboundUserId(WkdDirectoryStructure directoryStructure) throws Exception {
+    private TestCase test_unboundUserId(WkdDirectoryStructure directoryStructure) throws Exception {
         String lookupMail = "unbound-userid@" + domain;
         String userId = "WKD-Test Unbound User-ID <" + lookupMail + ">";
         String description = "Certificate has a single User-ID '" + userId + "' without binding signature.";
@@ -190,7 +171,7 @@ public class TestSuiteGenerator {
         return TestCase.fail("Unbound UserId", description, lookupMail, directoryStructure);
     }
 
-    private TestCase noUserId(WkdDirectoryStructure directoryStructure) throws Exception {
+    private TestCase test_noUserId(WkdDirectoryStructure directoryStructure) throws Exception {
         String lookupMail = "absent-userid@" + domain;
         String description = "Certificate has no user-id, but is deposited for mail address '" + lookupMail + "'.";
         // Generate certificate with temp user-id
@@ -218,10 +199,10 @@ public class TestSuiteGenerator {
         return TestCase.fail("No User-ID", description, lookupMail, directoryStructure);
     }
 
-    private TestCase secretKeyMaterial(WkdDirectoryStructure directoryStructure) throws Exception {
+    private TestCase test_secretKeyMaterial(WkdDirectoryStructure directoryStructure) throws Exception {
         String lookupMail = "test-secret-key@" + domain;
         String description = "Certificate file contains secret key material.";
-        PGPSecretKeyRing secretKeys = PGPainless.generateKeyRing().modernKeyRing("WKD-Test Secret Key <" + lookupMail + ">", null);
+        PGPSecretKeyRing secretKeys = secretKey("WKD-Test Secret Key <" + lookupMail + ">");
 
         writeDataFor(lookupMail, directoryStructure, new DataSink() {
             @Override
@@ -233,7 +214,8 @@ public class TestSuiteGenerator {
         return TestCase.fail("Secret Key Material", description, lookupMail, directoryStructure);
     }
 
-    private TestCase randomBytes(WkdDirectoryStructure directoryStructure) throws IOException {
+    private TestCase test_randomBytes(WkdDirectoryStructure directoryStructure)
+            throws IOException {
         String lookupMail = "random-bytes@" + domain;
         String description = "Certificate file contains random bytes.";
 
@@ -246,6 +228,31 @@ public class TestSuiteGenerator {
         });
 
         return TestCase.fail("Random Bytes", description, lookupMail, directoryStructure);
+    }
+
+    // INTERNAL METHODS
+
+    private WkdDirectoryStructure directoryStructureForMethod(File directory, DiscoveryMethod method) {
+        WkdDirectoryStructure structure;
+        if (method == DiscoveryMethod.direct) {
+            structure = new WkdDirectoryStructure.DirectMethod(directory, domain);
+        } else if (method == DiscoveryMethod.advanced) {
+            structure = new WkdDirectoryStructure.AdvancedMethod(directory, domain);
+        } else {
+            throw new IllegalArgumentException("Invalid value for parameter 'method'.");
+        }
+        return structure;
+    }
+
+    private PGPSecretKeyRing secretKey(String userId) throws PGPException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
+        PGPSecretKeyRing secretKeys = PGPainless.generateKeyRing().modernKeyRing(userId, null);
+        return secretKeys;
+    }
+
+    private PGPPublicKeyRing certificate(String userId) throws PGPException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
+        PGPSecretKeyRing secretKeys = secretKey(userId);
+        PGPPublicKeyRing publicKeys = PGPainless.extractCertificate(secretKeys);
+        return publicKeys;
     }
 
     private void writeDataFor(String mailAddress, WkdDirectoryStructure directory, DataSink sink)
@@ -263,7 +270,15 @@ public class TestSuiteGenerator {
     }
 
     private interface DataSink {
+
+        /**
+         * Write data into the {@link OutputStream}.
+         *
+         * @param outputStream output stream
+         * @throws IOException in case of an IO error
+         */
         void write(OutputStream outputStream) throws IOException;
+
     }
 
 }
