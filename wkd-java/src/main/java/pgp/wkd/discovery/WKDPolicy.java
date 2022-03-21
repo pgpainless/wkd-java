@@ -32,6 +32,15 @@ public final class WKDPolicy {
         this.submissionAddress = submissionAddress;
     }
 
+    /**
+     * Parse a {@link WKDPolicy} object by reading from the given {@link InputStream}.
+     * The stream will be closed by this method.
+     *
+     * @param inputStream InputStream
+     * @return parsed WKDPolicy object
+     *
+     * @throws IOException in case of an error
+     */
     public static WKDPolicy fromInputStream(InputStream inputStream) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -57,13 +66,19 @@ public final class WKDPolicy {
                 continue;
             }
             if (prepared.startsWith(KEYWORD_PROTOCOL_VERSION + ": ")) {
-                protocolVersion = Integer.parseInt(prepared.substring(KEYWORD_PROTOCOL_VERSION.length() + 2));
+                try {
+                    protocolVersion = Integer.parseInt(prepared.substring(KEYWORD_PROTOCOL_VERSION.length() + 2));
+                } catch (NumberFormatException e) {
+                    // ignore
+                }
                 continue;
             }
             if (prepared.startsWith(KEYWORD_SUBMISSION_ADDRESS + ": ")) {
                 submissionAddress = prepared.substring(KEYWORD_SUBMISSION_ADDRESS.length() + 2).trim();
             }
         }
+
+        inputStream.close();
 
         return new WKDPolicy(mailboxOnly, daneOnly, authSubmit, protocolVersion, submissionAddress);
     }
