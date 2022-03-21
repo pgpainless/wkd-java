@@ -7,10 +7,10 @@ package pgp.wkd.cli.command;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import pgp.wkd.WKDAddress;
 import pgp.wkd.WKDAddressHelper;
-import pgp.wkd.cli.HttpsCertificateDiscoverer;
+import pgp.wkd.cli.PGPainlessCertificateParser;
 import pgp.wkd.cli.RuntimeIOException;
 import pgp.wkd.discovery.CertificateDiscoverer;
-import pgp.wkd.discovery.CertificateFetcher;
+import pgp.wkd.discovery.DefaultCertificateDiscoverer;
 import pgp.wkd.discovery.DiscoveryResult;
 import pgp.wkd.discovery.HttpsUrlConnectionCertificateFetcher;
 import pgp.wkd.exception.MalformedUserIdException;
@@ -39,15 +39,14 @@ public class Fetch implements Runnable {
     )
     boolean armor = false;
 
-    // TODO: Better way to inject fetcher implementation
-    public static CertificateFetcher fetcher = new HttpsUrlConnectionCertificateFetcher();
+    private static CertificateDiscoverer discoverer = new DefaultCertificateDiscoverer(
+            new PGPainlessCertificateParser(), new HttpsUrlConnectionCertificateFetcher());
 
     @Override
     public void run() {
-        CertificateDiscoverer certificateDiscoverer = new HttpsCertificateDiscoverer(fetcher);
 
         WKDAddress address = addressFromUserId(userId);
-        DiscoveryResult result = certificateDiscoverer.discover(address);
+        DiscoveryResult result = discoverer.discover(address);
 
         OutputStream outputStream = armor ? new ArmoredOutputStream(System.out) : System.out;
         try {
@@ -56,8 +55,17 @@ public class Fetch implements Runnable {
                 outputStream.close();
             }
         } catch (IOException e) {
+            // we need to wrap the ioe, since run() does not declare it
             throw new RuntimeIOException(e);
         }
+    }
+
+    public static void setCertificateDiscoverer(CertificateDiscoverer discoverer) {
+        if (discoverer == null) {
+            throw new NullPointerException("CertificateDiscoverer cannot be null.");
+        }
+
+        Fetch.discoverer = discoverer;
     }
 
     private WKDAddress addressFromUserId(String userId) {

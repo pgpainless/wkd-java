@@ -27,8 +27,8 @@ public class DirectoryBasedCertificateFetcher implements CertificateFetcher {
     @Override
     public InputStream fetchCertificate(WKDAddress address, DiscoveryMethod method) throws IOException {
         URI uri = address.getUri(method);
-        String path = uri.getPath();
-        File file = rootPath.resolve(path.substring(1)).toFile(); // get rid of leading slash at start of path
+        String path = uri.getPath().substring(1); // get rid of leading slash at start of path
+        File file = rootPath.resolve(path).toFile();
         FileInputStream fileIn = new FileInputStream(file);
         return fileIn;
     }
