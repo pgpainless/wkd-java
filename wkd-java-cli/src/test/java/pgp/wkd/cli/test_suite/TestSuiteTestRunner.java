@@ -4,6 +4,7 @@
 
 package pgp.wkd.cli.test_suite;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -69,5 +70,10 @@ public class TestSuiteTestRunner {
                 assertNotEquals(0, exitCode, testCase.getTestDescription());
             }
         });
+    }
+
+    @AfterAll
+    public static void reset() {
+        Fetch.setCertificateDiscoverer(Fetch.DEFAULT_DISCOVERER);
     }
 }

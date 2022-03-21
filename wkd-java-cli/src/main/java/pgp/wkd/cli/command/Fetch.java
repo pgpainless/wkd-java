@@ -39,8 +39,10 @@ public class Fetch implements Runnable {
     )
     boolean armor = false;
 
-    private static CertificateDiscoverer discoverer = new DefaultCertificateDiscoverer(
+    public static final CertificateDiscoverer DEFAULT_DISCOVERER = new DefaultCertificateDiscoverer(
             new PGPainlessCertificateParser(), new HttpsUrlConnectionCertificateFetcher());
+
+    private static CertificateDiscoverer discoverer = DEFAULT_DISCOVERER;
 
     @Override
     public void run() {
