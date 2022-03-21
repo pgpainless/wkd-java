@@ -6,7 +6,7 @@ package pgp.wkd.discovery;
 
 import pgp.certificate_store.Certificate;
 import pgp.wkd.CertificateAndUserIds;
-import pgp.wkd.MissingUserIdException;
+import pgp.wkd.exception.RejectedCertificateException;
 import pgp.wkd.RejectedCertificate;
 import pgp.wkd.WKDAddress;
 
@@ -47,7 +47,7 @@ public class DefaultCertificateDiscoverer implements CertificateDiscoverer {
                 }
                 if (!containsEmail) {
                     rejectedCertificates.add(new RejectedCertificate(certificate,
-                            new MissingUserIdException("Certificate " + certificate.getFingerprint() +
+                            new RejectedCertificateException.MissingUserId("Certificate " + certificate.getFingerprint() +
                                     " does not contain user-id with email '" + email + "'")));
                 } else {
                     acceptableCertificates.add(certificate);

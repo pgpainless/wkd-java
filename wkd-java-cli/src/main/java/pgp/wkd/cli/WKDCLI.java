@@ -4,7 +4,8 @@
 
 package pgp.wkd.cli;
 
-import pgp.wkd.MissingUserIdException;
+import pgp.wkd.exception.CertNotFetchableException;
+import pgp.wkd.exception.RejectedCertificateException;
 import pgp.wkd.cli.command.Fetch;
 import picocli.CommandLine;
 
@@ -28,8 +29,8 @@ public class WKDCLI {
                 .setExitCodeExceptionMapper(new CommandLine.IExitCodeExceptionMapper() {
                     @Override
                     public int getExitCode(Throwable exception) {
-                        if (exception instanceof MissingUserIdException) {
-                            return MissingUserIdException.ERROR_CODE;
+                        if (exception instanceof RejectedCertificateException) {
+                            return ((RejectedCertificateException) exception).getErrorCode();
                         } else if (exception instanceof CertNotFetchableException) {
                             return CertNotFetchableException.ERROR_CODE;
                         }

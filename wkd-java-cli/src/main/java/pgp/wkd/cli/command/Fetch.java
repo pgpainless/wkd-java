@@ -5,17 +5,15 @@
 package pgp.wkd.cli.command;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
-import org.bouncycastle.util.io.Streams;
-import pgp.certificate_store.Certificate;
-import pgp.wkd.discovery.CertificateDiscoverer;
-import pgp.wkd.discovery.HttpsUrlConnectionCertificateFetcher;
-import pgp.wkd.MalformedUserIdException;
 import pgp.wkd.WKDAddress;
 import pgp.wkd.WKDAddressHelper;
-import pgp.wkd.discovery.DiscoveryResult;
-import pgp.wkd.discovery.CertificateFetcher;
-import pgp.wkd.cli.CertNotFetchableException;
 import pgp.wkd.cli.HttpsCertificateDiscoverer;
+import pgp.wkd.cli.RuntimeIOException;
+import pgp.wkd.discovery.CertificateDiscoverer;
+import pgp.wkd.discovery.CertificateFetcher;
+import pgp.wkd.discovery.DiscoveryResult;
+import pgp.wkd.discovery.HttpsUrlConnectionCertificateFetcher;
+import pgp.wkd.exception.MalformedUserIdException;
 import picocli.CommandLine;
 
 import java.io.IOException;
@@ -51,24 +49,14 @@ public class Fetch implements Runnable {
         WKDAddress address = addressFromUserId(userId);
         DiscoveryResult result = certificateDiscoverer.discover(address);
 
-        if (!result.isSuccessful()) {
-            throw new CertNotFetchableException("Cannot fetch cert.");
-        }
-
+        OutputStream outputStream = armor ? new ArmoredOutputStream(System.out) : System.out;
         try {
-            if (armor) {
-                OutputStream out = new ArmoredOutputStream(System.out);
-                for (Certificate certificate : result.getCertificates()) {
-                    Streams.pipeAll(certificate.getInputStream(), out);
-                }
-                out.close();
-            } else {
-                for (Certificate certificate : result.getCertificates()) {
-                    Streams.pipeAll(certificate.getInputStream(), System.out);
-                }
+            result.write(outputStream);
+            if (outputStream instanceof ArmoredOutputStream) {
+                outputStream.close();
             }
         } catch (IOException e) {
-            throw new CertNotFetchableException("Certificate cannot be fetched.", e);
+            throw new RuntimeIOException(e);
         }
     }
 

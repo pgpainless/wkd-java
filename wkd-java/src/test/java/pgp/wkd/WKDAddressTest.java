@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
+import pgp.wkd.exception.MalformedUserIdException;
 
 public class WKDAddressTest {
 
@@ -68,6 +69,22 @@ public class WKDAddressTest {
                 "Don Joeh>")) {
             assertThrows(MalformedUserIdException.class, () -> WKDAddressHelper.wkdAddressFromUserId(brokenUserId));
         }
+    }
+
+    @Test
+    public void fromLocalAndDomainPartTest() {
+        String validLocalPart = "Alice93";
+        String validDomainPart = "pgpainless.org";
+
+        String invalidLocalPart = "contains whitespace";
+        String invalidDomainPart = "contains white.space";
+
+        WKDAddress address = WKDAddress.fromLocalAndDomainPart(validLocalPart, validDomainPart);
+        assertEquals("Alice93@pgpainless.org", address.getEmail());
+
+        assertThrows(IllegalArgumentException.class, () -> WKDAddress.fromLocalAndDomainPart(invalidLocalPart, validDomainPart));
+        assertThrows(IllegalArgumentException.class, () -> WKDAddress.fromLocalAndDomainPart(validLocalPart, invalidDomainPart));
+        assertThrows(IllegalArgumentException.class, () -> WKDAddress.fromLocalAndDomainPart(invalidLocalPart, invalidDomainPart));
     }
 
     @Test

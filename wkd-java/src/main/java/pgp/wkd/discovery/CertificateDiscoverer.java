@@ -4,7 +4,7 @@
 
 package pgp.wkd.discovery;
 
-import pgp.wkd.MalformedUserIdException;
+import pgp.wkd.exception.MalformedUserIdException;
 import pgp.wkd.WKDAddress;
 import pgp.wkd.WKDAddressHelper;
 

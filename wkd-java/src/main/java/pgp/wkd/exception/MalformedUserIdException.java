@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package pgp.wkd;
+package pgp.wkd.exception;
 
 /**
  * Exception that gets thrown when the application is presented with a malformed user-id.

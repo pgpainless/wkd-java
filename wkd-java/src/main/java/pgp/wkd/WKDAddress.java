@@ -6,6 +6,7 @@ package pgp.wkd;
 
 import org.apache.commons.codec.binary.ZBase32;
 import pgp.wkd.discovery.DiscoveryMethod;
+import pgp.wkd.exception.MalformedUserIdException;
 
 import javax.annotation.Nonnull;
 import java.io.UnsupportedEncodingException;

@@ -4,6 +4,8 @@
 
 package pgp.wkd;
 
+import pgp.wkd.exception.MalformedUserIdException;
+
 import javax.annotation.Nonnull;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
