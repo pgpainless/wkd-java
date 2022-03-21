@@ -26,13 +26,6 @@ import java.util.regex.Pattern;
  */
 public final class WKDAddress {
 
-    private static final String SCHEME = "https://";
-    private static final String ADV_SUBDOMAIN = "openpgpkey.";
-    private static final String DIRECT_WELL_KNOWN = "/.well-known/openpgpkey/hu/";
-    private static String ADV_WELL_KNOWN(@Nonnull String domain) {
-        return "/.well-known/openpgpkey/" + domain + "/hu/";
-    }
-
     // RegExs for Email Addresses.
     // https://www.baeldung.com/java-email-validation-regex#regular-expression-by-rfc-5322-for-email-validation
     // Modified by adding capture groups '()' for local and domain part
@@ -118,6 +111,24 @@ public final class WKDAddress {
     }
 
     /**
+     * Return a {@link URI} pointing to the policy document for the given {@link DiscoveryMethod}.
+     *
+     * @param method discovery method
+     * @return policy uri
+     */
+    @Nonnull
+    public URI getPolicyUri(@Nonnull DiscoveryMethod method) {
+        switch (method) {
+            case advanced:
+                return getAdvancedMethodPolicyURI();
+            case direct:
+                return getDirectMethodPolicyURI();
+            default:
+                throw new IllegalArgumentException("Invalid discovery method: " + method);
+        }
+    }
+
+    /**
      * Return the email address from which the {@link WKDAddress} was created.
      *
      * @return email address
@@ -141,7 +152,9 @@ public final class WKDAddress {
      */
     @Nonnull
     public URI getDirectMethodURI() {
-        return URI.create(SCHEME + domainPart + DIRECT_WELL_KNOWN + zbase32LocalPart + "?l=" + percentEncodedLocalPart);
+        String urlString = String.format("https://%s/.well-known/openpgpkey/hu/%s?l=%s",
+                domainPart, zbase32LocalPart, percentEncodedLocalPart);
+        return URI.create(urlString);
     }
 
     /**
@@ -158,7 +171,32 @@ public final class WKDAddress {
      */
     @Nonnull
     public URI getAdvancedMethodURI() {
-        return URI.create(SCHEME + ADV_SUBDOMAIN + domainPart + ADV_WELL_KNOWN(domainPart) + zbase32LocalPart + "?l=" + percentEncodedLocalPart);
+        String urlString = String.format("https://openpgpkey.%s/.well-known/openpgpkey/%s/hu/%s?l=%s",
+                domainPart, domainPart, zbase32LocalPart, percentEncodedLocalPart);
+        return URI.create(urlString);
+    }
+
+    /**
+     * Return the policy uri for the direct discovery method.
+     *
+     * @return direct discovery policy uri
+     */
+    @Nonnull
+    public URI getDirectMethodPolicyURI() {
+        String urlString = String.format("https://%s/.well-known/openpgpkey/policy", domainPart);
+        return URI.create(urlString);
+    }
+
+    /**
+     * Return the policy uri for the advanced discovery method.
+     *
+     * @return advanced discovery policy uri
+     */
+    @Nonnull
+    public URI getAdvancedMethodPolicyURI() {
+        String urlString = String.format("https://openpgpkey.%s/.well-known/openpgpkey/%s/policy",
+                domainPart, domainPart);
+        return URI.create(urlString);
     }
 
     /**

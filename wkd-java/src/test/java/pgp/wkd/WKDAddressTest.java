@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
+import pgp.wkd.discovery.DiscoveryMethod;
 import pgp.wkd.exception.MalformedUserIdException;
 
 public class WKDAddressTest {
@@ -92,5 +93,24 @@ public class WKDAddressTest {
         for (String brokenEmail : Arrays.asList("john.doe", "@example.org", "john doe@example.org", "john.doe@example org")) {
             assertThrows(MalformedUserIdException.class, () -> WKDAddress.fromEmail(brokenEmail));
         }
+    }
+
+    @Test
+    public void testDirectPolicyUri() {
+        WKDAddress address = WKDAddress.fromEmail("alice@pgpainless.org");
+        assertEquals("https://pgpainless.org/.well-known/openpgpkey/policy", address.getDirectMethodPolicyURI().toString());
+    }
+
+    @Test
+    public void testAdvancedPolicyUri() {
+        WKDAddress address = WKDAddress.fromEmail("alice@pgpainless.org");
+        assertEquals("https://openpgpkey.pgpainless.org/.well-known/openpgpkey/pgpainless.org/policy", address.getAdvancedMethodPolicyURI().toString());
+    }
+
+    @Test
+    public void testPolicyUriByMethod() {
+        WKDAddress address = WKDAddress.fromEmail("bob@example.com");
+        assertEquals(address.getAdvancedMethodPolicyURI(), address.getPolicyUri(DiscoveryMethod.advanced));
+        assertEquals(address.getDirectMethodPolicyURI(), address.getPolicyUri(DiscoveryMethod.direct));
     }
 }
