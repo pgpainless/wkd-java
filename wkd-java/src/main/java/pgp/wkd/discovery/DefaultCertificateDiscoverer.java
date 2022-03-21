@@ -6,6 +6,7 @@ package pgp.wkd.discovery;
 
 import pgp.certificate_store.Certificate;
 import pgp.wkd.CertificateAndUserIds;
+import pgp.wkd.exception.MissingPolicyFileException;
 import pgp.wkd.exception.RejectedCertificateException;
 import pgp.wkd.RejectedCertificate;
 import pgp.wkd.WKDAddress;
@@ -27,9 +28,18 @@ public class DefaultCertificateDiscoverer implements CertificateDiscoverer {
 
     @Override
     public DiscoveryResponse discover(DiscoveryMethod method, WKDAddress address) {
+        DiscoveryResponse.Builder builder = DiscoveryResponse.builder(method, address);
+
+        fetchPolicy(method, address, builder);
+        fetchCertificates(method, address, builder);
+
+        return builder.build();
+    }
+
+    private void fetchCertificates(DiscoveryMethod method, WKDAddress address, DiscoveryResponse.Builder builder) {
         try {
-            InputStream inputStream = fetcher.fetchCertificate(address, method);
-            List<CertificateAndUserIds> fetchedCertificates = reader.read(inputStream);
+            InputStream certificateIn = fetcher.fetchCertificate(address, method);
+            List<CertificateAndUserIds> fetchedCertificates = reader.read(certificateIn);
 
             List<RejectedCertificate> rejectedCertificates = new ArrayList<>();
             List<Certificate> acceptableCertificates = new ArrayList<>();
@@ -54,10 +64,21 @@ public class DefaultCertificateDiscoverer implements CertificateDiscoverer {
                 }
             }
 
-            return DiscoveryResponse.success(method, address, acceptableCertificates, rejectedCertificates);
+            builder.setAcceptableCertificates(acceptableCertificates);
+            builder.setRejectedCertificates(rejectedCertificates);
 
         } catch (IOException e) {
-            return DiscoveryResponse.failure(method, address, e);
+            builder.setFetchingFailure(e);
+        }
+    }
+
+    private void fetchPolicy(DiscoveryMethod method, WKDAddress address, DiscoveryResponse.Builder builder) {
+        try {
+            InputStream policyIn = fetcher.fetchPolicy(address, method);
+            WKDPolicy policy = WKDPolicy.fromInputStream(policyIn);
+            builder.setPolicy(policy);
+        } catch (IOException e) {
+            builder.setMissingPolicyFileException(new MissingPolicyFileException(e));
         }
     }
 }

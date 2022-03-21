@@ -27,6 +27,17 @@ public abstract class AbstractUriCertificateFetcher implements CertificateFetche
         }
     }
 
+    @Override
+    public InputStream fetchPolicy(WKDAddress address, DiscoveryMethod method) throws IOException {
+        URI uri = address.getPolicyUri(method);
+        try {
+            return fetchFromUri(uri);
+        } catch (IOException e) {
+            LOGGER.debug("Could not fetch policy file using " + method + " method from " + uri, e);
+            throw e;
+        }
+    }
+
     /**
      * Fetch the contents of the file that the {@link URI} points to from the remote server.
      * @param uri uri

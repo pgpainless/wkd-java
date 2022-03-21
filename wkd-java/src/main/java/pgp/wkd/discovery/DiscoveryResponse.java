@@ -7,11 +7,11 @@ package pgp.wkd.discovery;
 import pgp.certificate_store.Certificate;
 import pgp.wkd.RejectedCertificate;
 import pgp.wkd.WKDAddress;
+import pgp.wkd.exception.MissingPolicyFileException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 
 public final class DiscoveryResponse {
@@ -21,6 +21,8 @@ public final class DiscoveryResponse {
     private final List<Certificate> certificates;
     private final List<RejectedCertificate> rejectedCertificates;
     private final Throwable fetchingFailure;
+    private final WKDPolicy policy;
+    private final MissingPolicyFileException missingPolicyFileException;
 
     /**
      * Constructor for a {@link DiscoveryResponse} object.
@@ -35,27 +37,16 @@ public final class DiscoveryResponse {
             WKDAddress address,
             List<Certificate> certificates,
             List<RejectedCertificate> rejectedCertificates,
-            Throwable fetchingFailure) {
+            Throwable fetchingFailure,
+            WKDPolicy policy,
+            MissingPolicyFileException missingPolicyFileException) {
         this.method = method;
         this.address = address;
         this.certificates = certificates;
         this.rejectedCertificates = rejectedCertificates;
         this.fetchingFailure = fetchingFailure;
-    }
-
-    public static DiscoveryResponse success(
-            @Nonnull DiscoveryMethod method,
-            @Nonnull WKDAddress address,
-            @Nonnull List<Certificate> certificates,
-            @Nonnull List<RejectedCertificate> rejectedCertificates) {
-        return new DiscoveryResponse(method, address, certificates, rejectedCertificates, null);
-    }
-
-    public static DiscoveryResponse failure(
-            @Nonnull DiscoveryMethod method,
-            @Nonnull WKDAddress address,
-            @Nonnull Throwable fetchingFailure) {
-        return new DiscoveryResponse(method, address, Collections.emptyList(), Collections.emptyList(), fetchingFailure);
+        this.policy = policy;
+        this.missingPolicyFileException = missingPolicyFileException;
     }
 
     @Nonnull
@@ -73,7 +64,7 @@ public final class DiscoveryResponse {
     }
 
     public boolean isSuccessful() {
-        return !hasFetchingFailure();
+        return !hasFetchingFailure() && hasPolicy();
     }
 
     @Nonnull
@@ -97,5 +88,72 @@ public final class DiscoveryResponse {
 
     public boolean hasFetchingFailure() {
         return fetchingFailure != null;
+    }
+
+    public boolean hasPolicy() {
+        return getPolicy() != null;
+    }
+
+    @Nullable
+    public WKDPolicy getPolicy() {
+        return policy;
+    }
+
+    public static Builder builder(@Nonnull DiscoveryMethod discoveryMethod, @Nonnull WKDAddress address) {
+        Builder builder = new Builder(discoveryMethod, address);
+        return builder;
+    }
+
+    public static class Builder {
+
+        private DiscoveryMethod discoveryMethod;
+        private WKDAddress address;
+        private List<Certificate> acceptableCertificates;
+        private List<RejectedCertificate> rejectedCertificates;
+        private Throwable fetchingFailure;
+        private WKDPolicy policy;
+        private MissingPolicyFileException missingPolicyFileException;
+
+        public Builder(DiscoveryMethod discoveryMethod, WKDAddress address) {
+            this.discoveryMethod = discoveryMethod;
+            this.address = address;
+        }
+
+        public Builder setAcceptableCertificates(List<Certificate> acceptableCertificates) {
+            this.acceptableCertificates = acceptableCertificates;
+            return this;
+        }
+
+        public Builder setRejectedCertificates(List<RejectedCertificate> rejectedCertificates) {
+            this.rejectedCertificates = rejectedCertificates;
+            return this;
+        }
+
+        public Builder setFetchingFailure(Throwable throwable) {
+            this.fetchingFailure = throwable;
+            return this;
+        }
+
+        public Builder setPolicy(WKDPolicy policy) {
+            this.policy = policy;
+            return this;
+        }
+
+        public Builder setMissingPolicyFileException(MissingPolicyFileException exception) {
+            this.missingPolicyFileException = exception;
+            return this;
+        }
+
+        public DiscoveryResponse build() {
+            return new DiscoveryResponse(
+                    discoveryMethod,
+                    address,
+                    acceptableCertificates,
+                    rejectedCertificates,
+                    fetchingFailure,
+                    policy,
+                    missingPolicyFileException
+            );
+        }
     }
 }

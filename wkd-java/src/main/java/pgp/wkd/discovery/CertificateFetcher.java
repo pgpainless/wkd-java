@@ -24,4 +24,15 @@ public interface CertificateFetcher {
      * @throws IOException in case of an error
      */
     InputStream fetchCertificate(WKDAddress address, DiscoveryMethod method) throws IOException;
+
+    /**
+     * Fetch the policy file belonging to the address and discovery method.
+     *
+     * @param address WKDAddress object
+     * @param method discovery method
+     * @return input stream containing the WKD policy file
+     *
+     * @throws IOException in case of an error
+     */
+    InputStream fetchPolicy(WKDAddress address, DiscoveryMethod method) throws IOException;
 }

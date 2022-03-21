@@ -10,6 +10,7 @@ import pgp.wkd.discovery.CertificateFetcher;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -26,6 +27,15 @@ public class DirectoryBasedCertificateFetcher implements CertificateFetcher {
 
     @Override
     public InputStream fetchCertificate(WKDAddress address, DiscoveryMethod method) throws IOException {
+        return inputStreamFromFile(address, method);
+    }
+
+    @Override
+    public InputStream fetchPolicy(WKDAddress address, DiscoveryMethod method) throws IOException {
+        return inputStreamFromFile(address, method);
+    }
+
+    private InputStream inputStreamFromFile(WKDAddress address, DiscoveryMethod method) throws FileNotFoundException {
         URI uri = address.getUri(method);
         String path = uri.getPath().substring(1); // get rid of leading slash at start of path
         File file = rootPath.resolve(path).toFile();

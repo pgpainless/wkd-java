@@ -40,6 +40,15 @@ public abstract class WkdDirectoryStructure {
         }
     }
 
+    protected void touch(File file) throws IOException {
+        if (!file.exists() && !file.createNewFile()) {
+            throw new IOException("Cannot create file '" + file.getAbsolutePath() + "'.");
+        }
+        if (!file.isFile()) {
+            throw new IOException("Cannot create file '" + file.getAbsolutePath() + "': Is not a file.");
+        }
+    }
+
     public abstract URI getAddress(String mail);
 
     public abstract File resolve(Path path);
@@ -47,10 +56,12 @@ public abstract class WkdDirectoryStructure {
     public static class DirectMethod extends WkdDirectoryStructure {
 
         private final File hu;
+        private final File policy;
 
         public DirectMethod(File rootDirectory, String domain) {
             super(rootDirectory, domain);
             this.hu = new File(openpgpkey, "hu");
+            this.policy = new File(openpgpkey, "policy");
         }
 
         @Override
@@ -72,6 +83,8 @@ public abstract class WkdDirectoryStructure {
             mkdir(wellKnown);
             mkdir(openpgpkey);
             mkdir(hu);
+
+            touch(policy);
         }
 
         @Override
@@ -89,11 +102,13 @@ public abstract class WkdDirectoryStructure {
 
         private final File domainFile;
         private final File hu;
+        private final File policy;
 
         public AdvancedMethod(File rootDir, String domain) {
             super(rootDir, domain);
             this.domainFile = new File(openpgpkey, domain);
             this.hu = new File(domainFile, "hu");
+            this.policy = new File(domainFile, "policy");
         }
 
         @Override
@@ -116,6 +131,8 @@ public abstract class WkdDirectoryStructure {
             mkdir(openpgpkey);
             mkdir(domainFile);
             mkdir(hu);
+
+            touch(policy);
         }
 
         @Override
