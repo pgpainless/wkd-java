@@ -5,6 +5,15 @@
 package pgp.wkd.test_suite;
 
 
+import org.bouncycastle.openpgp.PGPException;
+import org.bouncycastle.openpgp.PGPPublicKey;
+import org.bouncycastle.openpgp.PGPPublicKeyRing;
+import org.bouncycastle.openpgp.PGPSecretKeyRing;
+import org.bouncycastle.openpgp.PGPSignature;
+import org.pgpainless.PGPainless;
+import org.pgpainless.key.protection.SecretKeyRingProtector;
+import pgp.wkd.discovery.DiscoveryMethod;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,15 +26,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-
-import org.bouncycastle.openpgp.PGPException;
-import org.bouncycastle.openpgp.PGPPublicKey;
-import org.bouncycastle.openpgp.PGPPublicKeyRing;
-import org.bouncycastle.openpgp.PGPSecretKeyRing;
-import org.bouncycastle.openpgp.PGPSignature;
-import org.pgpainless.PGPainless;
-import org.pgpainless.key.protection.SecretKeyRingProtector;
-import pgp.wkd.discovery.DiscoveryMethod;
 
 public class TestSuiteGenerator {
 
@@ -49,6 +49,7 @@ public class TestSuiteGenerator {
         tests.addAll(test_baseCaseMultiUserIds(dirs));
         tests.add(test_secretKeyMaterial(dirs));
         tests.add(test_randomBytes(dirs));
+        tests.add(test_missingCertificate(dirs));
 
         return new TestSuite("0.1", tests);
     }
@@ -228,6 +229,13 @@ public class TestSuiteGenerator {
         });
 
         return TestCase.fail("Random Bytes", description, lookupMail, directoryStructure);
+    }
+
+    private TestCase test_missingCertificate(WkdDirectoryStructure dirs) {
+        String lookupMail = "missing-cert@" + domain;
+        String title = "Missing certificate";
+        String description = "There is no certificate for the lookup mail address '" + lookupMail + "'.";
+        return TestCase.fail(title, description, lookupMail, dirs);
     }
 
     // INTERNAL METHODS

@@ -11,11 +11,7 @@ public class CertNotFetchableException extends RuntimeException {
 
     public static final int ERROR_CODE = 3;
 
-    public CertNotFetchableException(String message) {
-        super(message);
-    }
-
-    public CertNotFetchableException(String message, Throwable e) {
-        super(message, e);
+    public CertNotFetchableException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

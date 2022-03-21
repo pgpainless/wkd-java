@@ -49,9 +49,11 @@ public class DiscoveryResult {
      *
      * @param outputStream output stream
      */
-    public void write(OutputStream outputStream) throws IOException {
+    public void write(OutputStream outputStream)
+            throws IOException {
+
         if (!isSuccessful()) {
-            throw new CertNotFetchableException("Cannot fetch cert.");
+            throwCertNotFetchableException();
         }
 
         byte[] buf = new byte[4096];
@@ -62,6 +64,21 @@ public class DiscoveryResult {
                 outputStream.write(buf, 0, read);
             }
         }
+    }
+
+    private void throwCertNotFetchableException() {
+        Throwable cause = null;
+        for (DiscoveryResponse response : getItems()) {
+            // Find the most "useful" exception.
+            // Rejections are more useful than fetching failures
+            if (!response.getRejectedCertificates().isEmpty()) {
+                cause = response.getRejectedCertificates().get(0).getReasonForRejection();
+                break;
+            } else {
+                cause = response.getFetchingFailure();
+            }
+        }
+        throw new CertNotFetchableException("Could not fetch certificates.", cause);
     }
 
     @Nonnull

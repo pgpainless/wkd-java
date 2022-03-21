@@ -10,6 +10,7 @@ import pgp.wkd.WKDAddress;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
@@ -65,6 +66,10 @@ public final class DiscoveryResponse {
     @Nonnull
     public WKDAddress getAddress() {
         return address;
+    }
+
+    public URI getUri() {
+        return getAddress().getUri(getMethod());
     }
 
     public boolean isSuccessful() {
