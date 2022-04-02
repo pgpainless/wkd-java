@@ -5,7 +5,6 @@
 package pgp.wkd.test_suite;
 
 
-import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.bouncycastle.openpgp.PGPSecretKeyRing;
@@ -15,25 +14,19 @@ import org.pgpainless.key.protection.SecretKeyRingProtector;
 import pgp.wkd.discovery.DiscoveryMethod;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Path;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-public class TestSuiteGenerator {
+public class TestSuiteGenerator extends AbstractTestSuiteGenerator {
 
-
-    private final String domain;
 
     public TestSuiteGenerator(String domain) {
-        this.domain = domain;
+        super(domain);
     }
 
     public TestSuite generateTestSuiteInDirectory(File directory, DiscoveryMethod method) throws Exception {
@@ -81,7 +74,7 @@ public class TestSuiteGenerator {
         String primaryDescription = "Certificate has multiple, valid user-ids. Is looked up via primary user-id '" + primaryUserId + "' using mail address '" + primaryLookupMail + "'.";
         String secondaryDescription = "Certificate has multiple, valid user-ids. Is looked up via secondary user-id '" + secondaryUserId + "' using mail address '" + secondaryLookupMail + "'.";
 
-        PGPSecretKeyRing secretKeys = PGPainless.generateKeyRing().modernKeyRing(primaryUserId, null);
+        PGPSecretKeyRing secretKeys = secretKey(primaryUserId);
         SecretKeyRingProtector protector = SecretKeyRingProtector.unprotectedKeys();
         secretKeys = PGPainless.modifyKeyRing(secretKeys)
                 .addUserId(secondaryUserId, protector)
@@ -237,56 +230,4 @@ public class TestSuiteGenerator {
         String description = "There is no certificate for the lookup mail address '" + lookupMail + "'.";
         return TestCase.fail(title, description, lookupMail, dirs);
     }
-
-    // INTERNAL METHODS
-
-    private WkdDirectoryStructure directoryStructureForMethod(File directory, DiscoveryMethod method) {
-        WkdDirectoryStructure structure;
-        if (method == DiscoveryMethod.direct) {
-            structure = new WkdDirectoryStructure.DirectMethod(directory, domain);
-        } else if (method == DiscoveryMethod.advanced) {
-            structure = new WkdDirectoryStructure.AdvancedMethod(directory, domain);
-        } else {
-            throw new IllegalArgumentException("Invalid value for parameter 'method'.");
-        }
-        return structure;
-    }
-
-    private PGPSecretKeyRing secretKey(String userId) throws PGPException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        PGPSecretKeyRing secretKeys = PGPainless.generateKeyRing().modernKeyRing(userId, null);
-        return secretKeys;
-    }
-
-    private PGPPublicKeyRing certificate(String userId) throws PGPException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        PGPSecretKeyRing secretKeys = secretKey(userId);
-        PGPPublicKeyRing publicKeys = PGPainless.extractCertificate(secretKeys);
-        return publicKeys;
-    }
-
-    private void writeDataFor(String mailAddress, WkdDirectoryStructure directory, DataSink sink)
-            throws IOException {
-        Path path = directory.getRelativeCertificatePath(mailAddress);
-        File file = directory.resolve(path);
-
-        if (!file.exists() && !file.createNewFile()) {
-            throw new IOException("Cannot create file " + file.getAbsolutePath());
-        }
-
-        try (FileOutputStream fileOut = new FileOutputStream(file)) {
-            sink.write(fileOut);
-        }
-    }
-
-    private interface DataSink {
-
-        /**
-         * Write data into the {@link OutputStream}.
-         *
-         * @param outputStream output stream
-         * @throws IOException in case of an IO error
-         */
-        void write(OutputStream outputStream) throws IOException;
-
-    }
-
 }
