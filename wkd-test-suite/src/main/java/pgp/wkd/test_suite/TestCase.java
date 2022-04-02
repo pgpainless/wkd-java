@@ -9,15 +9,21 @@ import java.nio.file.Path;
 
 public class TestCase {
 
-    final boolean expectSuccess;
+    enum Expectation {
+        success,
+        failure,
+        unassertive
+    }
+
+    final Expectation expectation;
     final String testTitle;
     final String testDescription;
     final String lookupMailAddress;
     final String certificatePath;
     final URI lookupUri;
 
-    public TestCase(boolean expectSuccess, String testTitle, String description, String lookupMailAddress, Path certificatePath, URI lookupUri) {
-        this.expectSuccess = expectSuccess;
+    public TestCase(Expectation expectation, String testTitle, String description, String lookupMailAddress, Path certificatePath, URI lookupUri) {
+        this.expectation = expectation;
         this.testTitle = testTitle;
         this.testDescription = description;
         this.lookupMailAddress = lookupMailAddress;
@@ -28,17 +34,25 @@ public class TestCase {
     public static TestCase ok(String title, String description, String lookupMail, WkdDirectoryStructure structure) {
         Path filePath = structure.getRelativeCertificatePath(lookupMail);
         URI certUri = structure.getAddress(lookupMail);
-        return new TestCase(true, title, description, lookupMail, filePath, certUri);
+        return new TestCase(Expectation.success, title, description, lookupMail, filePath, certUri);
     }
 
     public static TestCase fail(String title, String description, String lookupMail, WkdDirectoryStructure structure) {
         Path filePath = structure.getRelativeCertificatePath(lookupMail);
         URI certUri = structure.getAddress(lookupMail);
-        return new TestCase(false, title, description, lookupMail, filePath, certUri);
+        return new TestCase(Expectation.failure, title, description, lookupMail, filePath, certUri);
     }
 
     public boolean isExpectSuccess() {
-        return expectSuccess;
+        return expectation == Expectation.success;
+    }
+
+    public boolean isExpectFailure() {
+        return expectation == Expectation.failure;
+    }
+
+    public boolean isUnassertive() {
+        return expectation == Expectation.unassertive;
     }
 
     public String getTestTitle() {

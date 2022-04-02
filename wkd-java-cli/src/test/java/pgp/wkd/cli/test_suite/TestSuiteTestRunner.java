@@ -66,7 +66,7 @@ public class TestSuiteTestRunner {
 
             if (testCase.isExpectSuccess()) {
                 assertEquals(0, exitCode, testCase.getTestDescription());
-            } else {
+            } else if (testCase.isExpectFailure()) {
                 assertNotEquals(0, exitCode, testCase.getTestDescription());
             }
         });
