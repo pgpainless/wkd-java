@@ -21,7 +21,12 @@ public class WKDAddressHelper {
      * The user-id is herein expected to follow the mail name-addr format described in RFC2822.
      *
      * Example User ID (angle normally not escaped):
-     * "Slim Shady &lt;sshady@marshall-mathers.lp&gt; [Yes, the real Shady]"
+     * {@code
+     * <pre>
+     *     Slim Shady <sshady@marshall-mathers.lp> [Yes, the real Shady]"
+     * </pre>
+     * }
+     *
      *
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc4880#section-5.11">
      *     RFC4880 - OpenPGP Message Format - §5.11 User ID Packet</a>

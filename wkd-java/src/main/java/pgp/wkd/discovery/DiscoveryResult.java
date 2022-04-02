@@ -48,6 +48,7 @@ public class DiscoveryResult {
      * This method does not close the output stream.
      *
      * @param outputStream output stream
+     * @throws IOException in case of an IO error
      */
     public void write(OutputStream outputStream)
             throws IOException {

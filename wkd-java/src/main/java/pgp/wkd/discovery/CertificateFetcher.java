@@ -19,6 +19,7 @@ public interface CertificateFetcher {
      * Attempt to fetch an OpenPGP certificate from the Web Key Directory.
      *
      * @param address WKDAddress object
+     * @param method discovery method
      * @return input stream containing the certificate in its binary representation
      *
      * @throws IOException in case of an error
