@@ -25,8 +25,6 @@ public abstract class WkdDirectoryStructure {
         openpgpkey = new File(wellKnown, "openpgpkey");
     }
 
-    public abstract File getHu();
-
     public abstract Path getRelativeCertificatePath(String mailAddress);
 
     public abstract void mkdirs() throws IOException;
@@ -65,16 +63,11 @@ public abstract class WkdDirectoryStructure {
         }
 
         @Override
-        public File getHu() {
-            return hu;
-        }
-
-        @Override
         public Path getRelativeCertificatePath(String mailAddress) {
             WKDAddress address = WKDAddress.fromEmail(mailAddress);
             String path = address.getDirectMethodURI().getPath();
             String fileName = path.substring(path.lastIndexOf('/') + 1);
-            return rootDir.toPath().relativize(new File(getHu(), fileName).toPath());
+            return rootDir.toPath().relativize(new File(hu, fileName).toPath());
         }
 
         @Override
@@ -112,16 +105,11 @@ public abstract class WkdDirectoryStructure {
         }
 
         @Override
-        public File getHu() {
-            return hu;
-        }
-
-        @Override
         public Path getRelativeCertificatePath(String mailAddress) {
             WKDAddress address = WKDAddress.fromEmail(mailAddress);
             String path = address.getAdvancedMethodURI().getPath();
             String fileName = path.substring(path.lastIndexOf('/') + 1);
-            return rootDir.toPath().relativize(new File(getHu(), fileName).toPath());
+            return rootDir.toPath().relativize(new File(hu, fileName).toPath());
         }
 
         @Override
