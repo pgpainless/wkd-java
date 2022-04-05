@@ -10,7 +10,7 @@ import pgp.wkd.WKDAddressHelper;
 import pgp.wkd.cli.PGPainlessCertificateParser;
 import pgp.wkd.cli.RuntimeIOException;
 import pgp.wkd.discovery.CertificateDiscoverer;
-import pgp.wkd.discovery.DefaultCertificateDiscoverer;
+import pgp.wkd.discovery.ValidatingCertificateDiscoverer;
 import pgp.wkd.discovery.DiscoveryResult;
 import pgp.wkd.discovery.HttpsUrlConnectionCertificateFetcher;
 import pgp.wkd.exception.MalformedUserIdException;
@@ -39,7 +39,7 @@ public class Fetch implements Runnable {
     )
     boolean armor = false;
 
-    public static final CertificateDiscoverer DEFAULT_DISCOVERER = new DefaultCertificateDiscoverer(
+    public static final CertificateDiscoverer DEFAULT_DISCOVERER = new ValidatingCertificateDiscoverer(
             new PGPainlessCertificateParser(), new HttpsUrlConnectionCertificateFetcher());
 
     private static CertificateDiscoverer discoverer = DEFAULT_DISCOVERER;

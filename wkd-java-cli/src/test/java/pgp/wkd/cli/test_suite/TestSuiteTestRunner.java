@@ -12,7 +12,7 @@ import pgp.wkd.cli.PGPainlessCertificateParser;
 import pgp.wkd.cli.WKDCLI;
 import pgp.wkd.cli.command.Fetch;
 import pgp.wkd.discovery.CertificateDiscoverer;
-import pgp.wkd.discovery.DefaultCertificateDiscoverer;
+import pgp.wkd.discovery.ValidatingCertificateDiscoverer;
 import pgp.wkd.discovery.DiscoveryMethod;
 import pgp.wkd.test_suite.TestCase;
 import pgp.wkd.test_suite.TestSuite;
@@ -43,7 +43,7 @@ public class TestSuiteTestRunner {
         suite = generator.generateTestSuiteInDirectory(tempFile, DiscoveryMethod.direct);
 
         // Fetch certificates from a local directory instead of the internetzzz.
-        CertificateDiscoverer discoverer = new DefaultCertificateDiscoverer(
+        CertificateDiscoverer discoverer = new ValidatingCertificateDiscoverer(
                 new PGPainlessCertificateParser(), new DirectoryBasedCertificateFetcher(tempPath));
         Fetch.setCertificateDiscoverer(discoverer);
     }

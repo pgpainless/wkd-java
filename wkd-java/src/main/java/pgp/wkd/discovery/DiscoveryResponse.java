@@ -14,6 +14,9 @@ import javax.annotation.Nullable;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * A single response to a WKD query.
+ */
 public final class DiscoveryResponse {
 
     private final DiscoveryMethod method;
@@ -49,47 +52,100 @@ public final class DiscoveryResponse {
         this.missingPolicyFileException = missingPolicyFileException;
     }
 
+    /**
+     * Return the method that was used to fetch this response.
+     *
+     * @return method
+     */
     @Nonnull
     public DiscoveryMethod getMethod() {
         return method;
     }
 
+    /**
+     * Return the WKD-Address which is queried.
+     *
+     * @return address
+     */
     @Nonnull
     public WKDAddress getAddress() {
         return address;
     }
 
+    /**
+     * Return the URI that was queried against.
+     *
+     * @return URI
+     */
     public URI getUri() {
         return getAddress().getUri(getMethod());
     }
 
+    /**
+     * Return true, if the query was successful.
+     * That is, if there were no fetching errors, and if the server presented a policy.
+     *
+     * @return success
+     */
     public boolean isSuccessful() {
         return !hasFetchingFailure() && hasPolicy();
     }
 
+    /**
+     * Return the list of acceptable certificates that were returned by the WKD service.
+     *
+     * @return certificates
+     */
     @Nonnull
     public List<Certificate> getCertificates() {
         return certificates;
     }
 
+    /**
+     * Return a list containing all rejected certificates returned by the WKD service.
+     * Certificates can be rejected for several reasons such as a missing user-id, or if the certificate is malformed.
+     *
+     * @return list of rejected certificates
+     */
     @Nonnull
     public List<RejectedCertificate> getRejectedCertificates() {
         return rejectedCertificates;
     }
 
+    /**
+     * Return the cause of fetching errors, if any.
+     * A fetching failure might be e.g. a connection exception in case the WKD service cannot be reached.
+     *
+     * @return fetching failure
+     */
     @Nullable
     public Throwable getFetchingFailure() {
         return fetchingFailure;
     }
 
+    /**
+     * Return true, if the result contains acceptable certificates.
+     *
+     * @return true if the response has certificates
+     */
     public boolean hasCertificates() {
         return certificates != null && !certificates.isEmpty();
     }
 
+    /**
+     * Return true, if there was a fetching failure.
+     *
+     * @return true if failure
+     */
     public boolean hasFetchingFailure() {
         return fetchingFailure != null;
     }
 
+    /**
+     * Return true, if the WKD service presented a policy.
+     *
+     * @return true if policy available
+     */
     public boolean hasPolicy() {
         return getPolicy() != null;
     }
@@ -99,12 +155,18 @@ public final class DiscoveryResponse {
         return policy;
     }
 
-    public static Builder builder(@Nonnull DiscoveryMethod discoveryMethod, @Nonnull WKDAddress address) {
-        Builder builder = new Builder(discoveryMethod, address);
-        return builder;
+    /**
+     * Builder for {@link DiscoveryResponse}.
+     *
+     * @param discoveryMethod method used for discovery
+     * @param address WKD address
+     * @return builder
+     */
+    static Builder builder(@Nonnull DiscoveryMethod discoveryMethod, @Nonnull WKDAddress address) {
+        return new Builder(discoveryMethod, address);
     }
 
-    public static class Builder {
+    static class Builder {
 
         private DiscoveryMethod discoveryMethod;
         private WKDAddress address;
@@ -114,37 +176,37 @@ public final class DiscoveryResponse {
         private WKDPolicy policy;
         private MissingPolicyFileException missingPolicyFileException;
 
-        public Builder(DiscoveryMethod discoveryMethod, WKDAddress address) {
+        Builder(DiscoveryMethod discoveryMethod, WKDAddress address) {
             this.discoveryMethod = discoveryMethod;
             this.address = address;
         }
 
-        public Builder setAcceptableCertificates(List<Certificate> acceptableCertificates) {
+        Builder setAcceptableCertificates(List<Certificate> acceptableCertificates) {
             this.acceptableCertificates = acceptableCertificates;
             return this;
         }
 
-        public Builder setRejectedCertificates(List<RejectedCertificate> rejectedCertificates) {
+        Builder setRejectedCertificates(List<RejectedCertificate> rejectedCertificates) {
             this.rejectedCertificates = rejectedCertificates;
             return this;
         }
 
-        public Builder setFetchingFailure(Throwable throwable) {
+        Builder setFetchingFailure(Throwable throwable) {
             this.fetchingFailure = throwable;
             return this;
         }
 
-        public Builder setPolicy(WKDPolicy policy) {
+        Builder setPolicy(WKDPolicy policy) {
             this.policy = policy;
             return this;
         }
 
-        public Builder setMissingPolicyFileException(MissingPolicyFileException exception) {
+        Builder setMissingPolicyFileException(MissingPolicyFileException exception) {
             this.missingPolicyFileException = exception;
             return this;
         }
 
-        public DiscoveryResponse build() {
+        DiscoveryResponse build() {
             return new DiscoveryResponse(
                     discoveryMethod,
                     address,

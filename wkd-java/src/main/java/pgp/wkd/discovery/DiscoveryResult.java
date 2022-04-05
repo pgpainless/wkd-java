@@ -14,14 +14,28 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Result of discovering an OpenPGP certificate via WKD.
+ */
 public class DiscoveryResult {
 
-    private List<DiscoveryResponse> items;
+    private final List<DiscoveryResponse> items;
 
+    /**
+     * Create a {@link DiscoveryResult} from a list of {@link DiscoveryResponse DiscoveryResponses}.
+     * Usually the list contains one or two responses (one for each {@link DiscoveryMethod}.
+     *
+     * @param items responses
+     */
     public DiscoveryResult(@Nonnull List<DiscoveryResponse> items) {
         this.items = items;
     }
 
+    /**
+     * Return the list of acceptable certificates that were discovered.
+     *
+     * @return certificates
+     */
     @Nonnull
     public List<Certificate> getCertificates() {
         List<Certificate> certificates = new ArrayList<>();
@@ -34,6 +48,11 @@ public class DiscoveryResult {
         return certificates;
     }
 
+    /**
+     * Return true, if at least one {@link DiscoveryResponse} was successful and contained acceptable certificates.
+     *
+     * @return success
+     */
     public boolean isSuccessful() {
         for (DiscoveryResponse item : items) {
             if (item.isSuccessful() && item.hasCertificates()) {
@@ -69,7 +88,7 @@ public class DiscoveryResult {
 
     private void throwCertNotFetchableException() {
         Throwable cause = null;
-        for (DiscoveryResponse response : getItems()) {
+        for (DiscoveryResponse response : getResponses()) {
             // Find the most "useful" exception.
             // Rejections are more useful than fetching failures
             if (!response.getRejectedCertificates().isEmpty()) {
@@ -82,19 +101,13 @@ public class DiscoveryResult {
         throw new CertNotFetchableException("Could not fetch certificates.", cause);
     }
 
+    /**
+     * Return the list of responses.
+     *
+     * @return responses
+     */
     @Nonnull
-    public List<DiscoveryResponse> getItems() {
+    public List<DiscoveryResponse> getResponses() {
         return items;
-    }
-
-    @Nonnull
-    public List<DiscoveryResponse> getFailedItems() {
-        List<DiscoveryResponse> fails = new ArrayList<>();
-        for (DiscoveryResponse item : items) {
-            if (!item.isSuccessful()) {
-                fails.add(item);
-            }
-        }
-        return fails;
     }
 }

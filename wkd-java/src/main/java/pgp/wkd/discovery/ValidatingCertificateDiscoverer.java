@@ -16,12 +16,16 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultCertificateDiscoverer implements CertificateDiscoverer {
+/**
+ * Default implementation of the {@link CertificateDiscoverer}.
+ * This implementation validates the received certificates.
+ */
+public class ValidatingCertificateDiscoverer implements CertificateDiscoverer {
 
     protected final CertificateParser reader;
     protected final CertificateFetcher fetcher;
 
-    public DefaultCertificateDiscoverer(CertificateParser reader, CertificateFetcher fetcher) {
+    public ValidatingCertificateDiscoverer(CertificateParser reader, CertificateFetcher fetcher) {
         this.reader = reader;
         this.fetcher = fetcher;
     }
