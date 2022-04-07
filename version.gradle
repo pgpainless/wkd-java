@@ -11,6 +11,6 @@ allprojects {
         junitVersion = '5.8.2'
         slf4jVersion = '1.7.32'
         logbackVersion = '1.2.10'
-        pgpainlessVersion = '1.1.1'
+        pgpainlessVersion = '1.2.0'
     }
 }
