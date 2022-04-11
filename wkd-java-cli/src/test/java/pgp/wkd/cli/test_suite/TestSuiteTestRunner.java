@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import pgp.wkd.cli.PGPainlessCertificateParser;
 import pgp.wkd.cli.WKDCLI;
-import pgp.wkd.cli.command.Fetch;
+import pgp.wkd.cli.command.GetCmd;
 import pgp.wkd.discovery.CertificateDiscoverer;
 import pgp.wkd.discovery.ValidatingCertificateDiscoverer;
 import pgp.wkd.discovery.DiscoveryMethod;
@@ -45,7 +45,7 @@ public class TestSuiteTestRunner {
         // Fetch certificates from a local directory instead of the internetzzz.
         CertificateDiscoverer discoverer = new ValidatingCertificateDiscoverer(
                 new PGPainlessCertificateParser(), new DirectoryBasedCertificateFetcher(tempPath));
-        Fetch.setCertificateDiscoverer(discoverer);
+        GetCmd.setCertificateDiscoverer(discoverer);
     }
 
     @TestFactory
@@ -61,7 +61,7 @@ public class TestSuiteTestRunner {
 
             String mail = testCase.getLookupMailAddress();
             int exitCode = WKDCLI.execute(new String[] {
-                    "fetch", "--armor", mail
+                    "get", "--armor", mail
             });
 
             if (testCase.isExpectSuccess()) {
@@ -74,6 +74,6 @@ public class TestSuiteTestRunner {
 
     @AfterAll
     public static void reset() {
-        Fetch.setCertificateDiscoverer(Fetch.DEFAULT_DISCOVERER);
+        GetCmd.setCertificateDiscoverer(GetCmd.DEFAULT_DISCOVERER);
     }
 }

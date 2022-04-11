@@ -6,13 +6,15 @@ package pgp.wkd.cli;
 
 import pgp.wkd.exception.CertNotFetchableException;
 import pgp.wkd.exception.RejectedCertificateException;
-import pgp.wkd.cli.command.Fetch;
+import pgp.wkd.cli.command.GetCmd;
 import picocli.CommandLine;
 
 @CommandLine.Command(
+        name = "wkd",
+        description = "Interact with the Web Key Directory",
         subcommands = {
                 CommandLine.HelpCommand.class,
-                Fetch.class
+                GetCmd.class
         }
 )
 public class WKDCLI {

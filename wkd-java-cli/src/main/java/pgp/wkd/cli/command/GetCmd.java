@@ -20,10 +20,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 @CommandLine.Command(
-        name = "fetch",
-        description = "Fetch an OpenPGP Certificate via the Web Key Directory"
+        name = "get",
+        description = "Get an OpenPGP Certificate via the Web Key Directory"
 )
-public class Fetch implements Runnable {
+public class GetCmd implements Runnable {
 
     @CommandLine.Parameters(
             index = "0",
@@ -67,7 +67,7 @@ public class Fetch implements Runnable {
             throw new NullPointerException("CertificateDiscoverer cannot be null.");
         }
 
-        Fetch.discoverer = discoverer;
+        GetCmd.discoverer = discoverer;
     }
 
     private WKDAddress addressFromUserId(String userId) {

@@ -12,7 +12,7 @@ import pgp.wkd.cli.WKDCLI;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Disabled("For privacy reasons")
-public class TestFetchKeysFromGithubPages extends RedirectSystemStreamsTest {
+public class TestGetKeysFromGithubPages extends RedirectSystemStreamsTest {
 
     // Valid WKD publication.
     // Cert is available at https://pgpainless.github.io/.well-known/openpgpkey/hu/eprjcbeppbna3f6xabhtpddzpn41nknw
