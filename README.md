@@ -6,6 +6,10 @@ SPDX-License-Identifier: Apache-2.0
 
 # Web Key Directory for Java
 
+Client-side API for fetching OpenPGP certificates via the [Web Key Directory](https://www.ietf.org/archive/id/draft-koch-openpgp-webkey-service-13.html) protocol.
+
+## Modules
+
 This repository consists of the following modules:
 
 * [wkd-java](/wkd-java): An implementation of Certificate Discovery
