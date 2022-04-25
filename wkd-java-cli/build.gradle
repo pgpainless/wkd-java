@@ -14,21 +14,31 @@ repositories {
 }
 
 dependencies {
+    // JUnit
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 
+    // Test CLI Exit Codes
     // https://todd.ginsberg.com/post/testing-system-exit/
     testImplementation "com.ginsberg:junit5-system-exit:$junitSysExitVersion"
+
+    // Test using mocked components
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
 
+    // Certificates
     implementation("org.pgpainless:pgpainless-cert-d:$pgpainlessCertDVersion")
+
+    // WKD
     implementation project(':wkd-java')
+
+    // CLI
     implementation "info.picocli:picocli:$picocliVersion"
 
     // Logging
     testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
     implementation "org.slf4j:slf4j-nop:$slf4jVersion"
 
+    // Test Suite
     testImplementation project(":wkd-test-suite")
 }
 
