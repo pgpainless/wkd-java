@@ -23,7 +23,7 @@ dependencies {
 
     implementation("org.pgpainless:pgpainless-cert-d:$pgpainlessCertDVersion")
     implementation project(':wkd-java')
-    implementation "info.picocli:picocli:4.6.3"
+    implementation "info.picocli:picocli:$picocliVersion"
 
     // Logging
     testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
