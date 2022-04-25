@@ -9,6 +9,7 @@ allprojects {
         minAndroidSdk = 10
         javaSourceCompatibility = 1.8
         junitVersion = '5.8.2'
+        jsrVersion = '3.0.2'
         slf4jVersion = '1.7.32'
         logbackVersion = '1.2.10'
         pgpainlessVersion = '1.2.0'
