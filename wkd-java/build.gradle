@@ -13,12 +13,15 @@ repositories {
 }
 
 dependencies {
+    // JUnit
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 
     // Logging
     api "org.slf4j:slf4j-api:$slf4jVersion"
     testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
+
+    // Certificate store
     api "org.pgpainless:pgp-certificate-store:$certStoreVersion"
 
     // Z-Base32
