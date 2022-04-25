@@ -27,7 +27,7 @@ dependencies {
 
     // Logging
     testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
-    implementation 'org.slf4j:slf4j-nop:1.7.36'
+    implementation "org.slf4j:slf4j-nop:$slf4jVersion"
 
     testImplementation project(":wkd-test-suite")
 }
