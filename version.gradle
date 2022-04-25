@@ -13,6 +13,7 @@ allprojects {
         jsrVersion = '3.0.2'
         slf4jVersion = '1.7.36'
         logbackVersion = '1.2.11'
+        mockitoVersion = '4.5.1'
         pgpainlessVersion = '1.2.0'
         certStoreVersion = '0.1.0'
         zbase32Version = '1.0.0'

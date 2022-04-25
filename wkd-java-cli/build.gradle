@@ -19,7 +19,7 @@ dependencies {
 
     // https://todd.ginsberg.com/post/testing-system-exit/
     testImplementation "com.ginsberg:junit5-system-exit:$junitSysExitVersion"
-    testImplementation 'org.mockito:mockito-core:4.3.1'
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
 
     implementation("org.pgpainless:pgpainless-cert-d:0.1.1")
     implementation project(':wkd-java')
