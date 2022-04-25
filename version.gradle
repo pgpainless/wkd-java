@@ -12,6 +12,7 @@ allprojects {
         slf4jVersion = '1.7.32'
         logbackVersion = '1.2.10'
         pgpainlessVersion = '1.2.0'
+        certStoreVersion = '0.1.0'
         zbase32Version = '1.0.0'
     }
 }
