@@ -18,7 +18,7 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 
     // https://todd.ginsberg.com/post/testing-system-exit/
-    testImplementation 'com.ginsberg:junit5-system-exit:1.1.2'
+    testImplementation "com.ginsberg:junit5-system-exit:$junitSysExitVersion"
     testImplementation 'org.mockito:mockito-core:4.3.1'
 
     implementation("org.pgpainless:pgpainless-cert-d:0.1.1")
