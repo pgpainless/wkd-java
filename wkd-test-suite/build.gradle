@@ -29,7 +29,7 @@ dependencies {
     implementation "info.picocli:picocli:$picocliVersion"
 
     // Object Mapping
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonDataBindVersion"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonDataFormatXmlVersion"
     implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonDataBindVersion"
 }
 
