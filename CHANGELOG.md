@@ -8,6 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 
 ## 0.1.1
 - Bump `pgpainless-core` to `1.2.1`
+- Bump `cert-d-pgpainless` to `0.1.2`
 - Bump `pgp-certificate-store` to `0.1.1`
 - Bump `slf4j` to `1.7.36`
 - Bump `logback` to `1.2.11`
