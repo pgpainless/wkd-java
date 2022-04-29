@@ -22,7 +22,7 @@ dependencies {
     testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
 
     // Certificate store
-    api "org.pgpainless:pgp-certificate-store:$certStoreVersion"
+    api "org.pgpainless:pgp-certificate-store:$certDJavaVersion"
 
     // Z-Base32
     implementation "com.sandinh:zbase32-commons-codec:$zbase32Version"
