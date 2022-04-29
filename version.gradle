@@ -17,7 +17,7 @@ allprojects {
         logbackVersion = '1.2.11'
         mockitoVersion = '4.5.1'
         pgpainlessVersion = '1.2.1'
-        pgpainlessCertDVersion = '0.1.1'
+        pgpainlessCertDVersion = '0.1.2'
         picocliVersion = '4.6.3'
         certStoreVersion = '0.1.0'
         zbase32Version = '1.0.0'
