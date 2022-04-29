@@ -9,7 +9,6 @@ buildscript {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
-        mavenLocal()
         mavenCentral()
     }
     dependencies {
@@ -61,6 +60,7 @@ allprojects {
 
     repositories {
         mavenCentral()
+        mavenLocal()
     }
 
     // Reproducible Builds
