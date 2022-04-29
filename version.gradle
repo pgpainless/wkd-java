@@ -16,7 +16,7 @@ allprojects {
         slf4jVersion = '1.7.36'
         logbackVersion = '1.2.11'
         mockitoVersion = '4.5.1'
-        pgpainlessVersion = '1.2.0'
+        pgpainlessVersion = '1.2.1'
         pgpainlessCertDVersion = '0.1.1'
         picocliVersion = '4.6.3'
         certStoreVersion = '0.1.0'
