@@ -11,7 +11,7 @@ import picocli.CommandLine;
 
 @CommandLine.Command(
         name = "wkd",
-        description = "Interact with the Web Key Directory",
+        resourceBundle = "msg_wkd",
         subcommands = {
                 CommandLine.HelpCommand.class,
                 GetCmd.class

@@ -21,22 +21,18 @@ import java.io.OutputStream;
 
 @CommandLine.Command(
         name = "get",
-        description = "Get an OpenPGP Certificate via the Web Key Directory"
+        resourceBundle = "msg_get"
 )
 public class GetCmd implements Runnable {
 
     @CommandLine.Parameters(
             index = "0",
             arity = "1",
-            paramLabel = "USERID",
-            description = "Certificate User-ID"
-    )
+            paramLabel = "USERID")
     String userId;
 
     @CommandLine.Option(
-            names = {"-a", "--armor"},
-            description = "ASCII Armor the output"
-    )
+            names = {"-a", "--armor"})
     boolean armor = false;
 
     public static final CertificateDiscoverer DEFAULT_DISCOVERER = new ValidatingCertificateDiscoverer(
