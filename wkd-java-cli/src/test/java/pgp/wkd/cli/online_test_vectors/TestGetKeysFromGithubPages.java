@@ -16,7 +16,7 @@ public class TestGetKeysFromGithubPages extends RedirectSystemStreamsTest {
 
     // Valid WKD publication.
     // Cert is available at https://pgpainless.github.io/.well-known/openpgpkey/hu/eprjcbeppbna3f6xabhtpddzpn41nknw
-    private static final String USERID_BASE = "WKD Test <wkd-test-base@pgpainless.github.io> [Base Case - Valid User-ID]";
+    private static final String USERID_BASE = "WKD Test (Base Case - Valid User-ID) <wkd-test-base@pgpainless.github.io>";
     private static final String MAIL_BASE = "wkd-test-base@pgpainless.github.io";
 
     @Test
