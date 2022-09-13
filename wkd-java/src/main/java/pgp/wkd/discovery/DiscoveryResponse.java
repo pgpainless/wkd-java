@@ -12,6 +12,7 @@ import pgp.wkd.exception.MissingPolicyFileException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -170,8 +171,8 @@ public final class DiscoveryResponse {
 
         private DiscoveryMethod discoveryMethod;
         private WKDAddress address;
-        private List<Certificate> acceptableCertificates;
-        private List<RejectedCertificate> rejectedCertificates;
+        private List<Certificate> acceptableCertificates = new ArrayList<>();
+        private List<RejectedCertificate> rejectedCertificates = new ArrayList<>();
         private Throwable fetchingFailure;
         private WKDPolicy policy;
         private MissingPolicyFileException missingPolicyFileException;
