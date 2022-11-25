@@ -38,7 +38,7 @@ public class AbstractTestSuiteGenerator {
     }
 
     protected PGPSecretKeyRing secretKey(String userId) throws PGPException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        PGPSecretKeyRing secretKeys = PGPainless.generateKeyRing().modernKeyRing(userId, null);
+        PGPSecretKeyRing secretKeys = PGPainless.generateKeyRing().modernKeyRing(userId);
         return secretKeys;
     }
 

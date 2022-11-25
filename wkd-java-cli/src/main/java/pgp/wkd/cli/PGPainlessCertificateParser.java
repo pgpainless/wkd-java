@@ -10,7 +10,7 @@ import org.bouncycastle.openpgp.PGPPublicKeyRingCollection;
 import org.pgpainless.PGPainless;
 import org.pgpainless.certificate_store.CertificateFactory;
 import org.pgpainless.key.info.KeyRingInfo;
-import pgp.certificate_store.Certificate;
+import pgp.certificate_store.certificate.Certificate;
 import pgp.wkd.CertificateAndUserIds;
 import pgp.wkd.discovery.CertificateParser;
 
@@ -27,7 +27,7 @@ public class PGPainlessCertificateParser implements CertificateParser {
             PGPPublicKeyRingCollection certificates = PGPainless.readKeyRing().publicKeyRingCollection(inputStream);
             for (PGPPublicKeyRing certificate : certificates) {
                 KeyRingInfo info = PGPainless.inspectKeyRing(certificate);
-                Certificate parsedCert = CertificateFactory.certificateFromPublicKeyRing(certificate);
+                Certificate parsedCert = CertificateFactory.certificateFromPublicKeyRing(certificate, 0L);
                 List<String> userIds = info.getValidAndExpiredUserIds();
                 certificatesAndUserIds.add(new CertificateAndUserIds(parsedCert, userIds));
             }

@@ -4,7 +4,7 @@
 
 package pgp.wkd.discovery;
 
-import pgp.certificate_store.Certificate;
+import pgp.certificate_store.certificate.Certificate;
 import pgp.wkd.RejectedCertificate;
 import pgp.wkd.WKDAddress;
 import pgp.wkd.exception.MissingPolicyFileException;

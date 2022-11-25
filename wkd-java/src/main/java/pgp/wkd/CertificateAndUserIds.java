@@ -4,7 +4,7 @@
 
 package pgp.wkd;
 
-import pgp.certificate_store.Certificate;
+import pgp.certificate_store.certificate.Certificate;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,7 +4,8 @@
 
 package pgp.wkd;
 
-import pgp.certificate_store.Certificate;
+
+import pgp.certificate_store.certificate.Certificate;
 
 /**
  * A rejected OpenPGP certificate.
