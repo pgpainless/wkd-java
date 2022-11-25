@@ -6,6 +6,11 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 0.1.2-SNAPSHOT
+- Bump `pgpainless-core` to `1.13.2`
+- Bump `cert-d-pgpainless` to `0.2.1`
+- Bump `cert-d-java` to `0.2.1`
+
 ## 0.1.1
 - Bump `pgpainless-core` to `1.2.1`
 - Bump `cert-d-pgpainless` to `0.1.2`
