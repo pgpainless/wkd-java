@@ -6,9 +6,9 @@ package pgp.wkd.cli;
 
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
-import org.bouncycastle.openpgp.PGPPublicKeyRingCollection;
 import org.pgpainless.PGPainless;
 import org.pgpainless.certificate_store.CertificateFactory;
+import org.pgpainless.key.collection.PGPKeyRingCollection;
 import org.pgpainless.key.info.KeyRingInfo;
 import pgp.certificate_store.certificate.Certificate;
 import pgp.wkd.CertificateAndUserIds;
@@ -24,8 +24,11 @@ public class PGPainlessCertificateParser implements CertificateParser {
     public List<CertificateAndUserIds> read(InputStream inputStream) throws IOException {
         List<CertificateAndUserIds> certificatesAndUserIds = new ArrayList<>();
         try {
-            PGPPublicKeyRingCollection certificates = PGPainless.readKeyRing().publicKeyRingCollection(inputStream);
-            for (PGPPublicKeyRing certificate : certificates) {
+            PGPKeyRingCollection keyMaterial = PGPainless.readKeyRing().keyRingCollection(inputStream, true);
+            if (keyMaterial.getPGPSecretKeyRingCollection().size() != 0) {
+                throw new PGPException("Secret key material encountered!");
+            }
+            for (PGPPublicKeyRing certificate : keyMaterial.getPgpPublicKeyRingCollection()) {
                 KeyRingInfo info = PGPainless.inspectKeyRing(certificate);
                 Certificate parsedCert = CertificateFactory.certificateFromPublicKeyRing(certificate, 0L);
                 List<String> userIds = info.getValidAndExpiredUserIds();
