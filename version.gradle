@@ -4,8 +4,8 @@
 
 allprojects {
     ext {
-        shortVersion = '0.1.3'
-        isSnapshot = false
+        shortVersion = '0.1.4'
+        isSnapshot = true
         javaSourceCompatibility = 11
         jacksonDataBindVersion = '2.15.2'
         jacksonDataFormatXmlVersion = '2.15.2'
