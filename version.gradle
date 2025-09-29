@@ -15,10 +15,10 @@ allprojects {
         slf4jVersion = '1.7.36'
         logbackVersion = '1.5.13'
         mockitoVersion = '4.5.1'
-        pgpainlessVersion = '1.7.7'
-        pgpainlessCertDVersion = '0.2.2'
+        pgpainlessVersion = '2.0.0'
+        pgpainlessCertDVersion = '0.2.3'
         picocliVersion = '4.6.3'
-        certDJavaVersion = '0.2.2'
+        certDJavaVersion = '0.2.3'
         zbase32Version = '1.0.0'
     }
 }

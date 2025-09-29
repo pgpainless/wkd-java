@@ -4,9 +4,8 @@
 
 package pgp.wkd.test_suite;
 
-import org.bouncycastle.openpgp.PGPException;
-import org.bouncycastle.openpgp.PGPPublicKeyRing;
-import org.bouncycastle.openpgp.PGPSecretKeyRing;
+import org.bouncycastle.openpgp.api.OpenPGPCertificate;
+import org.bouncycastle.openpgp.api.OpenPGPKey;
 import org.pgpainless.PGPainless;
 import pgp.wkd.discovery.DiscoveryMethod;
 
@@ -15,8 +14,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.NoSuchAlgorithmException;
 
 public class AbstractTestSuiteGenerator {
     protected final String domain;
@@ -37,15 +34,15 @@ public class AbstractTestSuiteGenerator {
         return structure;
     }
 
-    protected PGPSecretKeyRing secretKey(String userId) throws PGPException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        PGPSecretKeyRing secretKeys = PGPainless.generateKeyRing().modernKeyRing(userId);
-        return secretKeys;
+    protected OpenPGPKey secretKey(String userId) {
+        OpenPGPKey secretKey = PGPainless.getInstance().generateKey().modernKeyRing(userId);
+        return secretKey;
     }
 
-    protected PGPPublicKeyRing certificate(String userId) throws PGPException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        PGPSecretKeyRing secretKeys = secretKey(userId);
-        PGPPublicKeyRing publicKeys = PGPainless.extractCertificate(secretKeys);
-        return publicKeys;
+    protected OpenPGPCertificate certificate(String userId) {
+        OpenPGPKey secretKeys = secretKey(userId);
+        OpenPGPCertificate certificate = secretKeys.toCertificate();
+        return certificate;
     }
 
     protected void writeDataFor(String mailAddress, WkdDirectoryStructure directory, TestSuiteGenerator.DataSink sink)

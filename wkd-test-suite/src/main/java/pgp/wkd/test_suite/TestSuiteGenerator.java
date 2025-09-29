@@ -7,8 +7,9 @@ package pgp.wkd.test_suite;
 
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
-import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import org.bouncycastle.openpgp.PGPSignature;
+import org.bouncycastle.openpgp.api.OpenPGPCertificate;
+import org.bouncycastle.openpgp.api.OpenPGPKey;
 import org.pgpainless.PGPainless;
 import org.pgpainless.key.protection.SecretKeyRingProtector;
 import pgp.wkd.discovery.DiscoveryMethod;
@@ -54,12 +55,12 @@ public class TestSuiteGenerator extends AbstractTestSuiteGenerator {
         String userId = "WKD-Test Base Case <base-case@" + domain + ">";
         String description = "Certificate has a single, valid user-id '" + userId + "'";
 
-        PGPPublicKeyRing publicKeys = certificate(userId);
+        OpenPGPCertificate publicKeys = certificate(userId);
 
         writeDataFor(lookupMail, directoryStructure, new DataSink() {
             @Override
             public void write(OutputStream outputStream) throws IOException {
-                publicKeys.encode(outputStream);
+                outputStream.write(publicKeys.getEncoded());
             }
         });
 
@@ -74,16 +75,16 @@ public class TestSuiteGenerator extends AbstractTestSuiteGenerator {
         String primaryDescription = "Certificate has multiple, valid user-ids. Is looked up via primary user-id '" + primaryUserId + "' using mail address '" + primaryLookupMail + "'.";
         String secondaryDescription = "Certificate has multiple, valid user-ids. Is looked up via secondary user-id '" + secondaryUserId + "' using mail address '" + secondaryLookupMail + "'.";
 
-        PGPSecretKeyRing secretKeys = secretKey(primaryUserId);
+        OpenPGPKey secretKeys = secretKey(primaryUserId);
         SecretKeyRingProtector protector = SecretKeyRingProtector.unprotectedKeys();
-        secretKeys = PGPainless.modifyKeyRing(secretKeys)
+        secretKeys = PGPainless.getInstance().modify(secretKeys)
                 .addUserId(secondaryUserId, protector)
                 .done();
-        PGPPublicKeyRing publicKeys = PGPainless.extractCertificate(secretKeys);
+        OpenPGPCertificate publicKeys = secretKeys.toCertificate();
         DataSink sink = new DataSink() {
             @Override
             public void write(OutputStream outputStream) throws IOException {
-                publicKeys.encode(outputStream);
+                outputStream.write(publicKeys.getEncoded());
             }
         };
 
@@ -105,14 +106,14 @@ public class TestSuiteGenerator extends AbstractTestSuiteGenerator {
         String userId1 = "First Certificate <" + lookupMail + ">";
         String userId2 = "Second Certificate <" + lookupMail + ">";
 
-        PGPPublicKeyRing cert1 = certificate(userId1);
-        PGPPublicKeyRing cert2 = certificate(userId2);
+        OpenPGPCertificate cert1 = certificate(userId1);
+        OpenPGPCertificate cert2 = certificate(userId2);
 
         writeDataFor(lookupMail, directoryStructure, new DataSink() {
             @Override
             public void write(OutputStream outputStream) throws IOException {
-                cert1.encode(outputStream);
-                cert2.encode(outputStream);
+                outputStream.write(cert1.getEncoded());
+                outputStream.write(cert2.getEncoded());
             }
         });
 
@@ -123,12 +124,12 @@ public class TestSuiteGenerator extends AbstractTestSuiteGenerator {
         String lookupMail = "wrong-userid@" + domain;
         String userId = "WKD-Test Different User-ID <different-userid@" + domain + ">";
         String description = "Certificate has a single, valid user-id '" + userId + "', but is deposited for mail address '" + lookupMail + "'.";
-        PGPPublicKeyRing publicKeys = certificate(userId);
+        OpenPGPCertificate publicKeys = certificate(userId);
 
         writeDataFor(lookupMail, directoryStructure, new DataSink() {
             @Override
             public void write(OutputStream outputStream) throws IOException {
-                publicKeys.encode(outputStream);
+                outputStream.write(publicKeys.getEncoded());
             }
         });
 
@@ -139,9 +140,9 @@ public class TestSuiteGenerator extends AbstractTestSuiteGenerator {
         String lookupMail = "unbound-userid@" + domain;
         String userId = "WKD-Test Unbound User-ID <" + lookupMail + ">";
         String description = "Certificate has a single User-ID '" + userId + "' without binding signature.";
-        PGPPublicKeyRing publicKeys = certificate(userId);
+        OpenPGPCertificate publicKeys = certificate(userId);
 
-        Iterator<PGPPublicKey> keyIterator = publicKeys.iterator();
+        Iterator<PGPPublicKey> keyIterator = publicKeys.getPGPPublicKeyRing().iterator();
         PGPPublicKey primaryKey = keyIterator.next();
         Iterator<PGPSignature> bindingSigs = primaryKey.getSignaturesForID(userId);
         while (bindingSigs.hasNext()) {
@@ -169,7 +170,8 @@ public class TestSuiteGenerator extends AbstractTestSuiteGenerator {
         String lookupMail = "absent-userid@" + domain;
         String description = "Certificate has no user-id, but is deposited for mail address '" + lookupMail + "'.";
         // Generate certificate with temp user-id
-        PGPPublicKeyRing publicKeys = certificate("DeleteMe");
+        OpenPGPCertificate certificate = certificate("DeleteMe");
+        PGPPublicKeyRing publicKeys = certificate.getPGPPublicKeyRing();
 
         // delete user-id
         List<PGPPublicKey> keys = new ArrayList<>();
@@ -196,12 +198,12 @@ public class TestSuiteGenerator extends AbstractTestSuiteGenerator {
     private TestCase test_secretKeyMaterial(WkdDirectoryStructure directoryStructure) throws Exception {
         String lookupMail = "test-secret-key@" + domain;
         String description = "Certificate file contains secret key material.";
-        PGPSecretKeyRing secretKeys = secretKey("WKD-Test Secret Key <" + lookupMail + ">");
+        OpenPGPKey secretKeys = secretKey("WKD-Test Secret Key <" + lookupMail + ">");
 
         writeDataFor(lookupMail, directoryStructure, new DataSink() {
             @Override
             public void write(OutputStream outputStream) throws IOException {
-                secretKeys.encode(outputStream);
+                outputStream.write(secretKeys.getEncoded());
             }
         });
 
